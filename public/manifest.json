@@ -10,6 +10,10 @@
     "128": "icons/icon-128.png"
   },
   "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://api.bilibili.com/*"
+  ],
   "action": {
     "default_title": "Universal Video Speed",
     "default_popup": "popup.html",

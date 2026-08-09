@@ -1,11 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { normalizeCreatorInput } from "../creator-defaults";
+import { resolveCreatorMetadata } from "../creator-metadata";
 import { DEFAULT_SETTINGS, isSupportedShortcutKey, normalizeSettings, type CreatorSite, type CreatorSpeedRule, type ShortcutMapping } from "../settings";
 import "./options.css";
 
 type Row = { id: string; key: string; rate: string };
-type CreatorRow = { id: string; site: CreatorSite; creator: string; creatorName: string; rate: string };
+type CreatorResolution = "idle" | "resolving" | "resolved" | "error";
+type CreatorRow = {
+  id: string;
+  site: CreatorSite;
+  creator: string;
+  creatorName: string;
+  rate: string;
+  resolution: CreatorResolution;
+};
 
 function mappingToRows(mapping: ShortcutMapping): Row[] {
   return Object.entries(mapping).map(([key, rate], index) => ({ id: `${key}-${index}`, key, rate: String(rate) }));
@@ -17,7 +26,8 @@ function rulesToRows(rules: CreatorSpeedRule[]): CreatorRow[] {
     site: rule.site,
     creator: rule.creatorId,
     creatorName: rule.creatorName ?? "",
-    rate: String(rule.rate)
+    rate: String(rule.rate),
+    resolution: rule.creatorName ? "resolved" : "idle"
   }));
 }
 
@@ -41,6 +51,40 @@ function Options(): React.JSX.Element {
     });
   }, []);
 
+  useEffect(() => {
+    const timers = creatorRows.flatMap((row) => {
+      if (row.resolution !== "idle" || !normalizeCreatorInput(row.site, row.creator)) return [];
+
+      return [window.setTimeout(() => {
+        const requestedSite = row.site;
+        const requestedCreator = row.creator;
+        updateCreatorRow(row.id, { resolution: "resolving" });
+        void resolveCreatorMetadata(requestedSite, requestedCreator).then((metadata) => {
+          setCreatorRows((current) => current.map((currentRow) => {
+            if (currentRow.id !== row.id || currentRow.site !== requestedSite || currentRow.creator !== requestedCreator) {
+              return currentRow;
+            }
+            if (!metadata) return { ...currentRow, resolution: "error" };
+            return {
+              ...currentRow,
+              creator: metadata.creatorId,
+              creatorName: metadata.creatorName,
+              resolution: "resolved"
+            };
+          }));
+        }).catch(() => {
+          setCreatorRows((current) => current.map((currentRow) =>
+            currentRow.id === row.id && currentRow.site === requestedSite && currentRow.creator === requestedCreator
+              ? { ...currentRow, resolution: "error" }
+              : currentRow
+          ));
+        });
+      }, 450)];
+    });
+
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [creatorRows]);
+
   const error = useMemo(() => {
     const keys = rows.map((row) => row.key);
     if (rows.length === 0) return "Add at least one shortcut.";
@@ -62,6 +106,7 @@ function Options(): React.JSX.Element {
     }
     return "";
   }, [creatorRows]);
+  const resolvingCreators = creatorRows.some((row) => row.resolution === "resolving");
 
   function updateRow(id: string, patch: Partial<Row>): void {
     setStatus("idle");
@@ -74,7 +119,7 @@ function Options(): React.JSX.Element {
   }
 
   async function save(): Promise<void> {
-    if (error || creatorError) return;
+    if (error || creatorError || resolvingCreators) return;
     const shortcuts = Object.fromEntries(rows.map((row) => [row.key, Number(row.rate)]));
     const creatorRules: CreatorSpeedRule[] = creatorRows.map((row) => ({
       site: row.site,
@@ -201,7 +246,8 @@ function Options(): React.JSX.Element {
                         updateCreatorRow(row.id, {
                           site: event.target.value as CreatorSite,
                           creator: "",
-                          creatorName: ""
+                          creatorName: "",
+                          resolution: "idle"
                         })
                       }
                     >
@@ -215,9 +261,17 @@ function Options(): React.JSX.Element {
                       className="creator-input"
                       value={row.creator}
                       placeholder={row.site === "youtube" ? "URL, @handle, or channel ID" : "Space URL or UID"}
-                      onChange={(event) => updateCreatorRow(row.id, { creator: event.target.value, creatorName: "" })}
+                      onChange={(event) => updateCreatorRow(row.id, {
+                        creator: event.target.value,
+                        creatorName: "",
+                        resolution: "idle"
+                      })}
                     />
+                    {row.resolution === "resolving" ? <span className="creator-name">Looking up creator…</span> : null}
                     {row.creatorName ? <span className="creator-name">{row.creatorName}</span> : null}
+                    {row.resolution === "error" ? (
+                      <span className="creator-name creator-name-error">Couldn’t load nickname. You can still save this creator.</span>
+                    ) : null}
                   </label>
                   <label className="rate-field">
                     <span className="sr-only">Default playback speed</span>
@@ -253,7 +307,7 @@ function Options(): React.JSX.Element {
               setStatus("idle");
               setCreatorRows((current) => [
                 ...current,
-                { id: crypto.randomUUID(), site: "youtube", creator: "", creatorName: "", rate: "1.5" }
+                { id: crypto.randomUUID(), site: "youtube", creator: "", creatorName: "", rate: "1.5", resolution: "idle" }
               ]);
             }}
           >
@@ -264,9 +318,9 @@ function Options(): React.JSX.Element {
 
       <footer className="footer">
         <p className={error || creatorError ? "message error" : "message"} role="status">
-          {error || creatorError || (status === "saved" ? "Saved — synced across Chrome." : "")}
+          {error || creatorError || (resolvingCreators ? "Looking up creator…" : status === "saved" ? "Saved — synced across Chrome." : "")}
         </p>
-        <button className="save" type="button" disabled={Boolean(error || creatorError) || !loaded} onClick={() => void save()}>
+        <button className="save" type="button" disabled={Boolean(error || creatorError) || resolvingCreators || !loaded} onClick={() => void save()}>
           {status === "saved" ? "Saved" : "Save changes"}
         </button>
       </footer>
