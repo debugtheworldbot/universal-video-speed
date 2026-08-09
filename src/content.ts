@@ -1,4 +1,5 @@
 import { showRateHud } from "./hud";
+import { releaseNativeFullscreenControlFocus, releaseVideoControlFocus } from "./fullscreen-focus";
 import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-rate";
 import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
@@ -124,6 +125,10 @@ function onKeyDown(event: KeyboardEvent): void {
 installVideoActivityTracking();
 installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
+document.addEventListener("fullscreenchange", releaseNativeFullscreenControlFocus, true);
+document.addEventListener("webkitbeginfullscreen", (event) => {
+  if (event.target instanceof HTMLVideoElement) releaseVideoControlFocus(event.target);
+}, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
 for (const eventName of ["play", "playing", "pause", "ended", "ratechange", "loadedmetadata"] as const) {
