@@ -2,6 +2,18 @@
 
 Keyboard playback-speed shortcuts for YouTube and Bilibili.
 
+## Installation
+
+1. Open the [latest GitHub release](https://github.com/debugtheworldbot/universal-video-speed/releases/latest) and download `universal-video-speed.zip` from **Assets**.
+2. Unzip the downloaded file to a permanent folder. Do not delete that folder after installation.
+3. Open your browser's extensions page:
+   - Chrome: `chrome://extensions`
+   - Microsoft Edge: `edge://extensions`
+4. Enable **Developer mode**.
+5. Choose **Load unpacked** and select the unzipped folder (the folder containing `manifest.json`).
+
+To update the extension, download and unzip the new release over the same folder, then click **Reload** for Universal Video Speed on the extensions page.
+
 ## Default shortcuts
 
 - `1` → 1×
