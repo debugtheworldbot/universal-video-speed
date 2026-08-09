@@ -22,8 +22,8 @@
     "placeholders": { "key": { "content": "$1" } }
   },
   "add_shortcut": { "message": "+ Add shortcut" },
-  "creator_defaults_title": { "message": "Creator defaults" },
-  "creator_defaults_hint": { "message": "Applied when a creator’s video loads. Easiest via popup." },
+  "creator_defaults_title": { "message": "Channel-specific speeds" },
+  "creator_defaults_hint": { "message": "Applied when a channel’s video loads. Easiest to set from the icon in the top-right corner." },
   "no_creator_defaults": { "message": "No creator defaults yet" },
   "no_creator_defaults_body": { "message": "On a YouTube or Bilibili video, open the extension popup and set a default — or add one manually." },
   "platform_label": { "message": "Platform" },

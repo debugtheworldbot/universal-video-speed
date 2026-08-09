@@ -22,8 +22,8 @@
     "placeholders": { "key": { "content": "$1" } }
   },
   "add_shortcut": { "message": "+ 添加快捷键" },
-  "creator_defaults_title": { "message": "创作者默认速度" },
-  "creator_defaults_hint": { "message": "创作者的视频加载时自动应用。通过弹出窗口设置最方便。" },
+  "creator_defaults_title": { "message": "频道指定速度" },
+  "creator_defaults_hint": { "message": "设定频道的视频加载时自动应用。通过点击右上角的图标设置最方便。" },
   "no_creator_defaults": { "message": "尚未设置创作者默认速度" },
   "no_creator_defaults_body": { "message": "打开 YouTube 或哔哩哔哩视频后，在扩展弹出窗口中设置默认速度，也可以在这里手动添加。" },
   "platform_label": { "message": "平台" },

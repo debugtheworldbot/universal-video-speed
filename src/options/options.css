@@ -95,6 +95,10 @@ h2 {
   text-align: right;
   max-width: 22ch;
 }
+.creator-hint {
+  max-width: none;
+  white-space: nowrap;
+}
 
 /* —— Shared map list (key → speed) —— */
 .map-list-header {

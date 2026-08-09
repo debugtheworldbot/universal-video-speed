@@ -7,6 +7,8 @@ describe("localization", () => {
   it("keeps the English and Simplified Chinese message catalogs in sync", () => {
     expect(Object.keys(simplifiedChineseMessages).sort()).toEqual(Object.keys(englishMessages).sort());
     expect(Object.values(simplifiedChineseMessages).every(({ message }) => message.length > 0)).toBe(true);
+    expect(simplifiedChineseMessages.creator_defaults_title.message).toBe("频道指定速度");
+    expect(simplifiedChineseMessages.creator_defaults_hint.message).toBe("设定频道的视频加载时自动应用。通过点击右上角的图标设置最方便。");
   });
 
   it("reads messages from the browser locale and updates the document", () => {

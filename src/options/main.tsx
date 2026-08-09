@@ -219,7 +219,7 @@ function Options(): React.JSX.Element {
         <section className="panel" aria-labelledby="creators-title">
           <div className="panel-head">
             <h2 id="creators-title">{t("creator_defaults_title")}</h2>
-            <p className="hint">{t("creator_defaults_hint")}</p>
+            <p className="hint creator-hint">{t("creator_defaults_hint")}</p>
           </div>
 
           {creatorRows.length === 0 ? (
