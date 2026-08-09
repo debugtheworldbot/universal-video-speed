@@ -41,6 +41,7 @@ async function saveCreatorRate(context: CreatorContext, rate: number | null): Pr
     creatorRules.push({
       site: context.site,
       creatorId: existing?.creatorId ?? context.creatorId,
+      creatorName: context.creatorName,
       rate
     });
   }
@@ -55,12 +56,19 @@ function Popup(): React.JSX.Element {
   const [shortcuts, setShortcuts] = useState<Array<[string, number]>>([]);
 
   useEffect(() => {
-    void Promise.all([readCreatorContext(), chrome.storage.sync.get("settings")]).then(([detected, { settings }]) => {
+    void Promise.all([readCreatorContext(), chrome.storage.sync.get("settings")]).then(async ([detected, { settings }]) => {
       const normalized = normalizeSettings(settings);
       setContext(detected);
       setShortcuts(Object.entries(normalized.shortcuts));
       if (detected) {
-        setRate(findCreatorRule(normalized.creatorRules, detected.site, detected.creatorIds)?.rate ?? null);
+        const existing = findCreatorRule(normalized.creatorRules, detected.site, detected.creatorIds);
+        setRate(existing?.rate ?? null);
+        if (existing && existing.creatorName !== detected.creatorName) {
+          const creatorRules = normalized.creatorRules.map((rule) =>
+            rule === existing ? { ...rule, creatorName: detected.creatorName } : rule
+          );
+          await chrome.storage.sync.set({ settings: { ...normalized, creatorRules } });
+        }
       }
     });
   }, []);

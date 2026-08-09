@@ -4,6 +4,7 @@ export type CreatorSite = "youtube" | "bilibili";
 export interface CreatorSpeedRule {
   site: CreatorSite;
   creatorId: string;
+  creatorName?: string;
   rate: number;
 }
 
@@ -50,6 +51,7 @@ export function normalizeSettings(value: unknown): Settings {
       (rule.site === "youtube" || rule.site === "bilibili") &&
       typeof rule.creatorId === "string" &&
       rule.creatorId.length > 0 &&
+      (rule.creatorName === undefined || typeof rule.creatorName === "string") &&
       typeof rule.rate === "number" &&
       rule.rate >= 0.25 &&
       rule.rate <= 16

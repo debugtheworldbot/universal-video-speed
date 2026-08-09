@@ -17,14 +17,15 @@ describe("settings", () => {
   it("retains valid creator defaults and removes invalid ones", () => {
     const settings = normalizeSettings({
       creatorRules: [
-        { site: "youtube", creatorId: "@creator", rate: 1.5 },
+        { site: "youtube", creatorId: "@creator", creatorName: "Creator", rate: 1.5 },
         { site: "bilibili", creatorId: "123", rate: 2 },
         { site: "vimeo", creatorId: "bad", rate: 2 },
+        { site: "youtube", creatorId: "@invalid-name", creatorName: 123, rate: 2 },
         { site: "youtube", creatorId: "bad-rate", rate: 20 }
       ]
     });
     expect(settings.creatorRules).toEqual([
-      { site: "youtube", creatorId: "@creator", rate: 1.5 },
+      { site: "youtube", creatorId: "@creator", creatorName: "Creator", rate: 1.5 },
       { site: "bilibili", creatorId: "123", rate: 2 }
     ]);
   });
