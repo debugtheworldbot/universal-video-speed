@@ -22,7 +22,7 @@ To update the extension, download and unzip the new release over the same folder
 - `2` → 2×
 - `3` → 3×
 
-Shortcuts are injected on regular web pages and into embedded player frames. They are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
+Shortcuts are injected on regular web pages and into embedded player frames. If the focused frame does not contain the video, the shortcut is relayed to the most recently active video frame. Shortcuts are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
 
 Browser-internal pages, browser extension stores, and other protected pages do not allow extensions to inject scripts. Some sites may also use a non-standard player or actively restrict playback rates, so universal coverage is best effort.
 

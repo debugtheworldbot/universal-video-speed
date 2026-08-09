@@ -1,4 +1,9 @@
-import { formatPlaybackBadgeRate, formatPlaybackBadgeText, isPlaybackBadgeMessage } from "./playback-badge";
+import {
+  formatPlaybackBadgeRate,
+  formatPlaybackBadgeText,
+  isPlaybackBadgeMessage,
+  isPlaybackRateCommandMessage
+} from "./playback-badge";
 import { t } from "./i18n";
 
 interface FramePlaybackState {
@@ -8,6 +13,26 @@ interface FramePlaybackState {
 }
 
 const tabPlaybackStates = new Map<number, Map<number, FramePlaybackState>>();
+
+async function relayPlaybackRate(tabId: number, sourceFrameId: number, message: unknown): Promise<void> {
+  const frameStates = tabPlaybackStates.get(tabId);
+  const targetFrameId = frameStates
+    ? [...frameStates.entries()]
+        .filter(([frameId, state]) => frameId !== sourceFrameId && state.hasVideo)
+        .sort(([, a], [, b]) => b.updatedAt - a.updatedAt)[0]?.[0]
+    : undefined;
+
+  if (targetFrameId !== undefined) {
+    try {
+      await chrome.tabs.sendMessage(tabId, message, { frameId: targetFrameId });
+      return;
+    } catch {
+      // The recorded frame may have navigated; fall through and ask every live frame.
+    }
+  }
+
+  await chrome.tabs.sendMessage(tabId, message);
+}
 
 async function renderBadge(tabId: number): Promise<void> {
   const frameStates = tabPlaybackStates.get(tabId);
@@ -31,6 +56,11 @@ async function renderBadge(tabId: number): Promise<void> {
 }
 
 chrome.runtime.onMessage.addListener((message: unknown, sender) => {
+  if (isPlaybackRateCommandMessage(message) && sender.tab?.id !== undefined) {
+    void relayPlaybackRate(sender.tab.id, sender.frameId ?? 0, message).catch(() => undefined);
+    return;
+  }
+
   if (!isPlaybackBadgeMessage(message) || sender.tab?.id === undefined) return;
 
   const tabId = sender.tab.id;

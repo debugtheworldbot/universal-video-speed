@@ -3,7 +3,12 @@ import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-
 import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
-import { PLAYBACK_BADGE_MESSAGE, type PlaybackBadgeMessage } from "./playback-badge";
+import {
+  isPlaybackRateCommandMessage,
+  PLAYBACK_BADGE_MESSAGE,
+  PLAYBACK_RATE_COMMAND_MESSAGE,
+  type PlaybackBadgeMessage
+} from "./playback-badge";
 
 const LOG_PREFIX = "[Universal Video Speed]";
 let settings: Settings = DEFAULT_SETTINGS;
@@ -24,6 +29,38 @@ function videoState(video: HTMLVideoElement): Record<string, number | boolean> {
     width: Math.round(rect.width),
     height: Math.round(rect.height)
   };
+}
+
+function applyPlaybackRate(video: HTMLVideoElement, rate: number, source: "keyboard" | "frame relay"): void {
+  console.info(`${LOG_PREFIX} applying playback rate`, {
+    requestedRate: rate,
+    source,
+    before: videoState(video),
+    videosInFrame: document.querySelectorAll("video").length,
+    frame: frameLabel()
+  });
+
+  try {
+    setVideoPlaybackRate(video, rate);
+    showRateHud(video, rate);
+  } catch (error) {
+    console.error(`${LOG_PREFIX} failed to set playback rate`, error);
+    return;
+  }
+
+  for (const delay of [0, 250, 1_000]) {
+    window.setTimeout(() => {
+      const state = videoState(video);
+      const method = state.playbackRate === rate && state.defaultPlaybackRate === rate ? "info" : "warn";
+      console[method](`${LOG_PREFIX} playback rate check`, {
+        requestedRate: rate,
+        source,
+        delayMs: delay,
+        ...state,
+        frame: frameLabel()
+      });
+    }, delay);
+  }
 }
 
 console.info(`${LOG_PREFIX} content script loaded`, {
@@ -111,6 +148,18 @@ if (window === window.top) {
   });
 }
 
+chrome.runtime.onMessage.addListener((message: unknown) => {
+  if (!isPlaybackRateCommandMessage(message)) return;
+  const video = findPrimaryVideo();
+  if (!video) return;
+
+  console.info(`${LOG_PREFIX} cross-frame shortcut received`, {
+    rate: message.rate,
+    frame: frameLabel()
+  });
+  applyPlaybackRate(video, message.rate, "frame relay");
+});
+
 function onKeyDown(event: KeyboardEvent): void {
   const rate = settings.shortcuts[event.key];
   if (rate === undefined) return;
@@ -137,44 +186,30 @@ function onKeyDown(event: KeyboardEvent): void {
     frame: frameLabel()
   });
 
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
   const video = findPrimaryVideo();
   if (!video) {
     console.warn(`${LOG_PREFIX} no video found in the focused frame`, {
       videosInFrame: document.querySelectorAll("video").length,
       frame: frameLabel()
     });
-    return;
-  }
-
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  console.info(`${LOG_PREFIX} applying playback rate`, {
-    requestedRate: rate,
-    before: videoState(video),
-    videosInFrame: document.querySelectorAll("video").length,
-    frame: frameLabel()
-  });
-
-  try {
-    setVideoPlaybackRate(video, rate);
-    showRateHud(video, rate);
-  } catch (error) {
-    console.error(`${LOG_PREFIX} failed to set playback rate`, error);
-    return;
-  }
-
-  for (const delay of [0, 250, 1_000]) {
-    window.setTimeout(() => {
-      const state = videoState(video);
-      const method = state.playbackRate === rate && state.defaultPlaybackRate === rate ? "info" : "warn";
-      console[method](`${LOG_PREFIX} playback rate check`, {
-        requestedRate: rate,
-        delayMs: delay,
-        ...state,
+    void chrome.runtime.sendMessage({
+      type: PLAYBACK_RATE_COMMAND_MESSAGE,
+      rate
+    }).then(() => {
+      console.info(`${LOG_PREFIX} cross-frame shortcut requested`, {
+        rate,
         frame: frameLabel()
       });
-    }, delay);
+    }).catch((error: unknown) => {
+      console.error(`${LOG_PREFIX} failed to request cross-frame shortcut`, error);
+    });
+    return;
   }
+
+  applyPlaybackRate(video, rate, "keyboard");
 }
 
 installVideoActivityTracking();

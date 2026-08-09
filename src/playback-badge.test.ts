@@ -3,7 +3,9 @@ import {
   formatPlaybackBadgeRate,
   formatPlaybackBadgeText,
   isPlaybackBadgeMessage,
-  PLAYBACK_BADGE_MESSAGE
+  isPlaybackRateCommandMessage,
+  PLAYBACK_BADGE_MESSAGE,
+  PLAYBACK_RATE_COMMAND_MESSAGE
 } from "./playback-badge";
 
 describe("playback badge", () => {
@@ -30,5 +32,12 @@ describe("playback badge", () => {
   it("rejects a video-present message without a valid rate", () => {
     expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: true })).toBe(false);
     expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: true, rate: 0 })).toBe(false);
+  });
+
+  it("accepts only supported cross-frame playback-rate commands", () => {
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 2.3 })).toBe(true);
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 0 })).toBe(false);
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 17 })).toBe(false);
+    expect(isPlaybackRateCommandMessage({ type: "other", rate: 2 })).toBe(false);
   });
 });
