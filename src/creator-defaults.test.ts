@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { creatorSiteForHostname, detectCreatorIds, findCreatorRule, normalizeCreatorInput, pageVideoKey } from "./creator-defaults";
+import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, normalizeCreatorInput, pageVideoKey } from "./creator-defaults";
 
 beforeEach(() => {
   document.head.innerHTML = "";
@@ -25,6 +25,17 @@ describe("creator defaults", () => {
     expect(detectCreatorIds("youtube")).toEqual(["@example", "UCstable"]);
   });
 
+  it("returns a popup-ready creator context with a stable ID and display name", () => {
+    document.head.innerHTML = '<meta itemprop="channelId" content="UCstable">';
+    document.body.innerHTML = '<ytd-watch-metadata><ytd-video-owner-renderer><div id="channel-name"><a href="/@Example">Example Channel</a></div></ytd-video-owner-renderer></ytd-watch-metadata>';
+    expect(detectCreatorContext("www.youtube.com")).toEqual({
+      site: "youtube",
+      creatorId: "UCstable",
+      creatorIds: ["@example", "UCstable"],
+      creatorName: "Example Channel"
+    });
+  });
+
   it("detects a Bilibili owner UID", () => {
     document.body.innerHTML = '<a class="up-name" href="https://space.bilibili.com/24680">Creator</a>';
     expect(detectCreatorIds("bilibili")).toEqual(["24680"]);
@@ -44,5 +55,12 @@ describe("creator defaults", () => {
     expect(creatorSiteForHostname("www.youtube.com")).toBe("youtube");
     expect(creatorSiteForHostname("www.bilibili.com")).toBe("bilibili");
     expect(creatorSiteForHostname("example.com")).toBeNull();
+  });
+
+  it("recognizes video pages without treating feeds or channel pages as videos", () => {
+    expect(isVideoPage("youtube", new URL("https://www.youtube.com/watch?v=abc"))).toBe(true);
+    expect(isVideoPage("youtube", new URL("https://www.youtube.com/@creator"))).toBe(false);
+    expect(isVideoPage("bilibili", new URL("https://www.bilibili.com/video/BV123"))).toBe(true);
+    expect(isVideoPage("bilibili", new URL("https://www.bilibili.com/"))).toBe(false);
   });
 });

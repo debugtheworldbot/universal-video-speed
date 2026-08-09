@@ -8,7 +8,8 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        options: "options.html"
+        options: "options.html",
+        popup: "popup.html"
       },
       output: {
         entryFileNames: "[name].js",

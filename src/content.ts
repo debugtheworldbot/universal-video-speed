@@ -1,6 +1,7 @@
 import { showRateHud } from "./hud";
 import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-rate";
-import { creatorSiteForHostname, detectCreatorIds, findCreatorRule, pageVideoKey } from "./creator-defaults";
+import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
+import { resolveShortcutRate, shortcutEventId } from "./shortcut-key";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
 
@@ -33,19 +34,36 @@ function scheduleCreatorDefault(): void {
 
 function applyCreatorDefault(): void {
   const site = creatorSiteForHostname(location.hostname);
-  if (!site || settings.creatorRules.length === 0 || isHostDisabled(location.hostname, settings.disabledHosts)) return;
+  if (!site || !isVideoPage(site) || settings.creatorRules.length === 0 || isHostDisabled(location.hostname, settings.disabledHosts)) return;
 
   const rule = findCreatorRule(settings.creatorRules, site, detectCreatorIds(site));
   const video = rule ? findPrimaryVideo() : null;
   if (!rule || !video || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
 
-  const signature = `${site}:${pageVideoKey(site)}:${rule.creatorId}`;
+  const signature = `${site}:${pageVideoKey(site)}:${rule.creatorId}:${rule.rate}`;
   if (appliedDefaults.get(video) === signature) return;
-  video.playbackRate = rule.rate;
+  setVideoPlaybackRate(video, rule.rate);
   appliedDefaults.set(video, signature);
 }
 
-function onKeyDown(event: KeyboardEvent): void {
+if (window === window.top) {
+  chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
+    if (!message || typeof message !== "object" || (message as { type?: unknown }).type !== "get-creator-context") return;
+    const site = creatorSiteForHostname(location.hostname);
+    let response: CreatorContextResponse;
+    if (!site || !isVideoPage(site)) {
+      response = { status: "unsupported" };
+    } else {
+      const context = detectCreatorContext(location.hostname);
+      response = context ? { status: "ready", context } : { status: "detecting" };
+    }
+    sendResponse(response);
+  });
+}
+
+const handledShortcutKeys = new Set<string>();
+
+function handleShortcut(event: KeyboardEvent): boolean {
   if (
     event.repeat ||
     event.isComposing ||
@@ -55,24 +73,36 @@ function onKeyDown(event: KeyboardEvent): void {
     isEditableTarget(event) ||
     isHostDisabled(location.hostname, settings.disabledHosts)
   ) {
-    return;
+    return false;
   }
 
-  const rate = settings.shortcuts[event.key];
-  if (rate === undefined) return;
+  const rate = resolveShortcutRate(event, settings.shortcuts);
+  if (rate === undefined) return false;
 
   const video = findPrimaryVideo();
-  if (!video) return;
+  if (!video) return false;
 
   event.preventDefault();
   event.stopImmediatePropagation();
   setVideoPlaybackRate(video, rate);
   showRateHud(video, rate);
+  return true;
+}
+
+function onKeyDown(event: KeyboardEvent): void {
+  if (handleShortcut(event)) handledShortcutKeys.add(shortcutEventId(event));
+}
+
+function onKeyUp(event: KeyboardEvent): void {
+  const id = shortcutEventId(event);
+  if (handledShortcutKeys.delete(id)) return;
+  handleShortcut(event);
 }
 
 installVideoActivityTracking();
 installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
+window.addEventListener("keyup", onKeyUp, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
 

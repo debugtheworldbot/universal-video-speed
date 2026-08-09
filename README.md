@@ -18,6 +18,8 @@ You can replace the defaults with any single non-modifier key from the extension
 
 Set a default playback speed for individual YouTube channels or Bilibili creators from the settings page. Paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. The creator speed is applied once when each video loads, so you can still change it afterward.
 
+On a YouTube or Bilibili video page, open the extension popup to detect the current creator and set or clear their default speed immediately.
+
 ## Development
 
 Requires Node.js 20.19 or newer.

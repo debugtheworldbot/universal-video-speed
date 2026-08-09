@@ -1,5 +1,17 @@
 import type { CreatorSite, CreatorSpeedRule } from "./settings";
 
+export interface CreatorContext {
+  site: CreatorSite;
+  creatorId: string;
+  creatorIds: string[];
+  creatorName: string;
+}
+
+export type CreatorContextResponse =
+  | { status: "ready"; context: CreatorContext }
+  | { status: "detecting" }
+  | { status: "unsupported" };
+
 const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"]);
 const BILIBILI_HOSTS = new Set(["bilibili.com", "www.bilibili.com", "m.bilibili.com"]);
 
@@ -8,6 +20,13 @@ export function creatorSiteForHostname(hostname: string): CreatorSite | null {
   if (YOUTUBE_HOSTS.has(host)) return "youtube";
   if (BILIBILI_HOSTS.has(host)) return "bilibili";
   return null;
+}
+
+export function isVideoPage(site: CreatorSite, url: URL = new URL(location.href)): boolean {
+  if (site === "youtube") {
+    return (url.pathname === "/watch" && Boolean(url.searchParams.get("v"))) || url.pathname.startsWith("/shorts/");
+  }
+  return /^\/video\/[^/]+/.test(url.pathname);
 }
 
 function parseUrl(value: string): URL | null {
@@ -73,6 +92,30 @@ export function detectCreatorIds(site: CreatorSite, root: ParentNode = document)
     }
   }
   return [...ids];
+}
+
+export function detectCreatorContext(hostname: string, root: ParentNode = document): CreatorContext | null {
+  const site = creatorSiteForHostname(hostname);
+  if (!site) return null;
+
+  const creatorIds = detectCreatorIds(site, root);
+  if (creatorIds.length === 0) return null;
+
+  const nameSelectors = site === "youtube"
+    ? [
+      "ytd-watch-metadata ytd-video-owner-renderer #channel-name a",
+      "#owner #channel-name a",
+      "ytd-reel-player-overlay-renderer #channel-name a"
+    ]
+    : ["a.up-name", ".up-info-container .up-name", ".video-owner .up-name"];
+  const creatorName = nameSelectors
+    .map((selector) => root.querySelector<HTMLElement>(selector)?.textContent?.trim())
+    .find(Boolean) ?? creatorIds[0];
+  const creatorId = site === "youtube"
+    ? creatorIds.find((id) => id.startsWith("UC")) ?? creatorIds[0]
+    : creatorIds[0];
+
+  return { site, creatorId, creatorIds, creatorName };
 }
 
 export function findCreatorRule(rules: CreatorSpeedRule[], site: CreatorSite, creatorIds: string[]): CreatorSpeedRule | null {

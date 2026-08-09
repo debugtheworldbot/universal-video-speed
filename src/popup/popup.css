@@ -1,0 +1,48 @@
+:root {
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  color: #171714;
+  background: #f1f0ea;
+  font-synthesis: none;
+  --ink: #171714;
+  --muted: #74736c;
+  --line: #cfcdc2;
+  --signal: #e8ff47;
+}
+
+* { box-sizing: border-box; }
+body { width: 360px; margin: 0; background: #f1f0ea; }
+button, select { font: inherit; }
+
+.popup-shell { min-height: 390px; padding: 22px 24px 18px; display: flex; flex-direction: column; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .09em; text-transform: uppercase; }
+.brand-mark { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--signal); font-size: 8px; }
+
+.creator-card, .state-card { flex: 1; padding-top: 46px; }
+.platform-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.platform-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+.platform-dot.youtube { background: #ff0033; }
+.platform-dot.bilibili { background: #00aeec; }
+.save-state { margin-left: auto; color: var(--ink); opacity: 0; transition: opacity 160ms; }
+.save-state.visible { opacity: 1; }
+
+h1 { margin: 18px 0 5px; font-size: 29px; line-height: 1.04; letter-spacing: -.055em; font-weight: 650; overflow-wrap: anywhere; }
+.creator-id { margin: 0; color: var(--muted); font: 500 10px/1.4 "SFMono-Regular", Consolas, monospace; overflow-wrap: anywhere; }
+.rate-control { margin-top: 34px; padding: 13px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; font-weight: 600; }
+.select-wrap { position: relative; padding-right: 16px; }
+.select-wrap::after { content: "↓"; position: absolute; right: 0; top: 50%; translate: 0 -50%; pointer-events: none; font: 600 12px/1 "SFMono-Regular", Consolas, monospace; }
+select { max-width: 135px; border: 0; border-radius: 0; outline: none; appearance: none; background: transparent; color: var(--ink); cursor: pointer; font-size: 18px; font-weight: 700; text-align: right; }
+select:focus-visible { box-shadow: 0 2px var(--ink); }
+select:disabled { opacity: .55; }
+.note { margin: 12px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+
+.state-card h1 { max-width: 275px; margin-top: 12px; }
+.state-card > p:last-child { color: var(--muted); font-size: 12px; line-height: 1.55; }
+.state-kicker, .loading p { margin: 0; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.loading { position: relative; overflow: hidden; }
+.scan-line { display: block; width: 100%; height: 1px; margin: 0 0 18px; background: var(--ink); transform-origin: left; animation: scan 1.1s ease-in-out infinite; }
+
+.settings-link { width: 100%; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; }
+.settings-link:hover { color: var(--ink); }
+
+@keyframes scan { 0%, 100% { scale: .08 1; opacity: .35; } 50% { scale: 1 1; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

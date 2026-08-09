@@ -10,11 +10,9 @@
     "128": "icons/icon-128.png"
   },
   "permissions": ["storage"],
-  "background": {
-    "service_worker": "background.js"
-  },
   "action": {
-    "default_title": "Universal Video Speed settings",
+    "default_title": "Universal Video Speed",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"
