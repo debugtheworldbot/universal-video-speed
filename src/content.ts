@@ -73,9 +73,22 @@ if (window === window.top) {
 }
 
 const handledShortcutKeys = new Set<string>();
+const directKeyUpTimes = new Map<string, number>();
 
-function handleShortcut(event: KeyboardEvent, phase: "keydown" | "keyup"): boolean {
-  const editable = isEditableTarget(event);
+interface RelayedKeyEvent {
+  key: string;
+  code: string;
+  repeat: boolean;
+  isComposing: boolean;
+  metaKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  shiftKey: boolean;
+  editable: boolean;
+}
+
+function handleShortcut(event: KeyboardEvent, phase: "keydown" | "keyup" | "relayed-keyup", editableOverride?: boolean): boolean {
+  const editable = editableOverride ?? isEditableTarget(event);
   const disabledOnHost = isHostDisabled(location.hostname, settings.disabledHosts);
   const rate = resolveShortcutRate(event, settings.shortcuts);
   const shouldLog = rate !== undefined || /^(?:Digit|Numpad)\d$/.test(event.code);
@@ -134,12 +147,46 @@ function onKeyDown(event: KeyboardEvent): void {
 
 function onKeyUp(event: KeyboardEvent): void {
   const id = shortcutEventId(event);
+  directKeyUpTimes.set(id, performance.now());
   if (handledShortcutKeys.delete(id)) {
     debugLog("keyup-deduplicated", { key: event.key, code: event.code });
     return;
   }
   handleShortcut(event, "keyup");
 }
+
+function isRelayedKeyEvent(value: unknown): value is RelayedKeyEvent {
+  if (!value || typeof value !== "object") return false;
+  const event = value as Partial<RelayedKeyEvent>;
+  return (
+    typeof event.key === "string" &&
+    typeof event.code === "string" &&
+    typeof event.repeat === "boolean" &&
+    typeof event.isComposing === "boolean" &&
+    typeof event.metaKey === "boolean" &&
+    typeof event.ctrlKey === "boolean" &&
+    typeof event.altKey === "boolean" &&
+    typeof event.shiftKey === "boolean" &&
+    typeof event.editable === "boolean"
+  );
+}
+
+window.addEventListener("message", (event) => {
+  if (event.source !== window || !event.data || typeof event.data !== "object") return;
+  const message = event.data as { source?: unknown; version?: unknown; keyEvent?: unknown };
+  if (message.source !== "universal-video-speed-main-world" || message.version !== 1 || !isRelayedKeyEvent(message.keyEvent)) return;
+
+  const relayed = message.keyEvent;
+  const id = shortcutEventId(relayed);
+  if (performance.now() - (directKeyUpTimes.get(id) ?? -Infinity) < 250) {
+    debugLog("main-world-keyup-deduplicated", { key: relayed.key, code: relayed.code });
+    return;
+  }
+
+  debugLog("main-world-keyup-received", { key: relayed.key, code: relayed.code });
+  const syntheticEvent = new KeyboardEvent("keyup", relayed);
+  handleShortcut(syntheticEvent, "relayed-keyup", relayed.editable);
+});
 
 installVideoActivityTracking();
 installPlaybackRateProtection();
