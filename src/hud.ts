@@ -1,7 +1,26 @@
 let hud: HTMLDivElement | null = null;
 let hideTimer: number | undefined;
+let removeFromTopLayerTimer: number | undefined;
 let positionFrame: number | undefined;
 const VIDEO_INSET = 18;
+const EXIT_TRANSITION_MS = 140;
+
+function showInTopLayer(element: HTMLDivElement): boolean {
+  if (typeof element.showPopover !== "function" || !element.hasAttribute("popover")) return false;
+
+  try {
+    if (!element.matches(":popover-open")) element.showPopover();
+    return true;
+  } catch {
+    element.removeAttribute("popover");
+    return false;
+  }
+}
+
+function hideFromTopLayer(element: HTMLDivElement): void {
+  if (typeof element.hidePopover !== "function" || !element.matches(":popover-open")) return;
+  element.hidePopover();
+}
 
 function trackVideoPosition(video: HTMLVideoElement): void {
   if (positionFrame !== undefined) window.cancelAnimationFrame(positionFrame);
@@ -25,8 +44,11 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
   if (!hud || !hud.isConnected) {
     hud = document.createElement("div");
     hud.setAttribute("aria-hidden", "true");
+    if (typeof hud.showPopover === "function") hud.setAttribute("popover", "manual");
     Object.assign(hud.style, {
       position: "fixed",
+      inset: "auto",
+      margin: "0",
       zIndex: "2147483647",
       pointerEvents: "none",
       padding: "10px 16px",
@@ -47,10 +69,14 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
   }
 
   const fullscreenRoot = document.fullscreenElement;
-  const overlayRoot = fullscreenRoot instanceof HTMLElement && !(fullscreenRoot instanceof HTMLMediaElement)
+  const usesTopLayer = showInTopLayer(hud);
+  const overlayRoot = !usesTopLayer && fullscreenRoot instanceof HTMLElement && !(fullscreenRoot instanceof HTMLMediaElement)
     ? fullscreenRoot
     : document.documentElement;
   if (hud.parentElement !== overlayRoot) overlayRoot.append(hud);
+
+  // Re-show after moving the element because a DOM move can dismiss its popover state.
+  if (usesTopLayer) showInTopLayer(hud);
 
   hud.textContent = `${Number.isInteger(rate) ? rate.toFixed(0) : rate}×`;
   trackVideoPosition(video);
@@ -58,11 +84,15 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
   hud.style.transform = "scale(1)";
 
   window.clearTimeout(hideTimer);
+  window.clearTimeout(removeFromTopLayerTimer);
   hideTimer = window.setTimeout(() => {
     if (!hud) return;
     if (positionFrame !== undefined) window.cancelAnimationFrame(positionFrame);
     positionFrame = undefined;
     hud.style.opacity = "0";
     hud.style.transform = "scale(0.96)";
+    removeFromTopLayerTimer = window.setTimeout(() => {
+      if (hud) hideFromTopLayer(hud);
+    }, EXIT_TRANSITION_MS);
   }, 900);
 }
