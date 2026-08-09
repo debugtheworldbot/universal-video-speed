@@ -5,7 +5,8 @@ await buildOptions();
 
 await buildExtensionScripts({
   entryPoints: {
-    content: "src/content.ts"
+    content: "src/content.ts",
+    background: "src/background.ts"
   },
   bundle: true,
   format: "iife",

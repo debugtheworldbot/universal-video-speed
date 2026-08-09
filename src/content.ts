@@ -3,8 +3,21 @@ import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-
 import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
+import { PLAYBACK_BADGE_MESSAGE, type PlaybackBadgeMessage } from "./playback-badge";
 
 let settings: Settings = DEFAULT_SETTINGS;
+
+function reportPlaybackBadge(reset = false, forceStopped = false): void {
+  const video = forceStopped ? null : findPrimaryVideo();
+  const playing = Boolean(video && !video.paused && !video.ended);
+  const message: PlaybackBadgeMessage = {
+    type: PLAYBACK_BADGE_MESSAGE,
+    playing,
+    ...(playing && video ? { rate: video.playbackRate } : {}),
+    ...(reset ? { reset: true } : {})
+  };
+  void chrome.runtime.sendMessage(message).catch(() => undefined);
+}
 
 void chrome.storage.sync.get("settings").then(({ settings: saved }) => {
   settings = normalizeSettings(saved);
@@ -90,6 +103,11 @@ installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
+for (const eventName of ["play", "playing", "pause", "ended", "ratechange", "loadedmetadata"] as const) {
+  document.addEventListener(eventName, () => reportPlaybackBadge(), true);
+}
+window.addEventListener("pagehide", () => reportPlaybackBadge(window === window.top, true), true);
+reportPlaybackBadge(window === window.top);
 
 function observeCreatorChanges(): void {
   if (!document.documentElement) return;
