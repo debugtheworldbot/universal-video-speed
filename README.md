@@ -1,6 +1,6 @@
 # Universal Video Speed
 
-Keyboard playback-speed shortcuts for YouTube and Bilibili.
+Keyboard playback-speed shortcuts for videos across the web, including videos inside embedded players.
 
 ## Installation
 
@@ -22,13 +22,15 @@ To update the extension, download and unzip the new release over the same folder
 - `2` → 2×
 - `3` → 3×
 
-Shortcuts are injected only on YouTube and Bilibili. They are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
+Shortcuts are injected on regular web pages and into embedded player frames. They are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
+
+Browser-internal pages, browser extension stores, and other protected pages do not allow extensions to inject scripts. Some sites may also use a non-standard player or actively restrict playback rates, so universal coverage is best effort.
 
 You can replace the defaults with any single non-modifier key from the extension's settings page.
 
 ## Creator defaults
 
-Set a default playback speed for individual YouTube channels or Bilibili creators from the settings page. Paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. Valid entries are resolved to a stable ID and display their current nickname automatically. The creator speed is applied once when each video loads, so you can still change it afterward.
+Keyboard shortcuts work across the web. Creator-specific defaults are available for individual YouTube channels and Bilibili creators. From the settings page, paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. Valid entries are resolved to a stable ID and display their current nickname automatically. The creator speed is applied once when each video loads, so you can still change it afterward.
 
 On a YouTube or Bilibili video page, open the extension popup to detect the current creator and set or clear their default speed immediately.
 

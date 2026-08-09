@@ -1,6 +1,6 @@
 {
   "extension_name": { "message": "Universal Video Speed" },
-  "extension_description": { "message": "Keyboard playback-speed shortcuts for YouTube and Bilibili." },
+  "extension_description": { "message": "Keyboard playback-speed shortcuts for videos across the web." },
   "playback_title": {
     "message": "Universal Video Speed · $RATE$×",
     "placeholders": { "rate": { "content": "$1" } }
@@ -10,7 +10,7 @@
   "settings_lede": { "message": "Map keys to speeds, and pin defaults for creators you watch often." },
   "playback_settings": { "message": "Playback settings" },
   "shortcuts_title": { "message": "Shortcuts" },
-  "shortcuts_hint": { "message": "Works when you’re not typing." },
+  "shortcuts_hint": { "message": "Works on videos across the web when you’re not typing." },
   "key_label": { "message": "Key" },
   "speed_label": { "message": "Speed" },
   "shortcut_key": { "message": "Shortcut key" },

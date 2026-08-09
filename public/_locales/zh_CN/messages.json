@@ -1,6 +1,6 @@
 {
   "extension_name": { "message": "Universal Video Speed" },
-  "extension_description": { "message": "为 YouTube 和哔哩哔哩提供键盘播放速度快捷键。" },
+  "extension_description": { "message": "为网页视频提供通用键盘播放速度快捷键。" },
   "playback_title": {
     "message": "Universal Video Speed · $RATE$×",
     "placeholders": { "rate": { "content": "$1" } }
@@ -10,7 +10,7 @@
   "settings_lede": { "message": "将按键映射到播放速度，并为常看的创作者设置默认速度。" },
   "playback_settings": { "message": "播放设置" },
   "shortcuts_title": { "message": "快捷键" },
-  "shortcuts_hint": { "message": "未输入文字时生效。" },
+  "shortcuts_hint": { "message": "在各类网页视频中生效，输入文字时会自动忽略。" },
   "key_label": { "message": "按键" },
   "speed_label": { "message": "速度" },
   "shortcut_key": { "message": "快捷键按键" },
