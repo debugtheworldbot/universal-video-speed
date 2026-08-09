@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { findCreatorRule, type CreatorContext, type CreatorContextResponse } from "../creator-defaults";
-import { normalizeSettings, type CreatorSpeedRule } from "../settings";
+import { normalizeSettings } from "../settings";
 import "./popup.css";
 
 const COMMON_RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
+
+function shortcutLabel(key: string): string {
+  if (key === " ") return "Space";
+  return key.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
 
 async function readCreatorContext(): Promise<CreatorContext | null> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -47,12 +52,15 @@ function Popup(): React.JSX.Element {
   const [rate, setRate] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [shortcuts, setShortcuts] = useState<Array<[string, number]>>([]);
 
   useEffect(() => {
     void Promise.all([readCreatorContext(), chrome.storage.sync.get("settings")]).then(([detected, { settings }]) => {
+      const normalized = normalizeSettings(settings);
       setContext(detected);
+      setShortcuts(Object.entries(normalized.shortcuts));
       if (detected) {
-        setRate(findCreatorRule(normalizeSettings(settings).creatorRules, detected.site, detected.creatorIds)?.rate ?? null);
+        setRate(findCreatorRule(normalized.creatorRules, detected.site, detected.creatorIds)?.rate ?? null);
       }
     });
   }, []);
@@ -80,11 +88,6 @@ function Popup(): React.JSX.Element {
 
   return (
     <main className="popup-shell">
-      <header className="brand">
-        <span className="brand-mark" aria-hidden="true">UV</span>
-        <span>Universal Video Speed</span>
-      </header>
-
       {context === undefined ? (
         <section className="state-card loading" aria-live="polite">
           <span className="scan-line" />
@@ -118,6 +121,21 @@ function Popup(): React.JSX.Element {
           <p>The popup will recognize the channel automatically.</p>
         </section>
       )}
+
+      <section className="shortcut-summary" aria-labelledby="shortcut-summary-title">
+        <div className="shortcut-heading">
+          <h2 id="shortcut-summary-title">Shortcuts</h2>
+          <span>Key / speed</span>
+        </div>
+        <div className="shortcut-grid">
+          {shortcuts.map(([key, shortcutRate]) => (
+            <div className="shortcut-item" key={key} aria-label={`${shortcutLabel(key)} sets speed to ${shortcutRate} times`}>
+              <kbd>{shortcutLabel(key)}</kbd>
+              <span>{shortcutRate}×</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <button className="settings-link" type="button" onClick={() => {
         void chrome.runtime.openOptionsPage();

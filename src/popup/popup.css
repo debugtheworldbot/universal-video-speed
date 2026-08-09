@@ -14,10 +14,8 @@ body { width: 360px; margin: 0; background: #f1f0ea; }
 button, select { font: inherit; }
 
 .popup-shell { min-height: 390px; padding: 22px 24px 18px; display: flex; flex-direction: column; }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .09em; text-transform: uppercase; }
-.brand-mark { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--signal); font-size: 8px; }
 
-.creator-card, .state-card { flex: 1; padding-top: 46px; }
+.creator-card, .state-card { flex: 1; padding-top: 4px; padding-bottom: 30px; }
 .platform-line { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .platform-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
 .platform-dot.youtube { background: #ff0033; }
@@ -40,6 +38,15 @@ select:disabled { opacity: .55; }
 .state-kicker, .loading p { margin: 0; color: var(--muted); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .loading { position: relative; overflow: hidden; }
 .scan-line { display: block; width: 100%; height: 1px; margin: 0 0 18px; background: var(--ink); transform-origin: left; animation: scan 1.1s ease-in-out infinite; }
+
+.shortcut-summary { padding: 14px 0 18px; border-top: 1px solid var(--ink); }
+.shortcut-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.shortcut-heading h2 { margin: 0; font-size: 12px; line-height: 1; letter-spacing: -.02em; }
+.shortcut-heading > span { color: var(--muted); font: 500 8px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.shortcut-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+.shortcut-item { min-width: 0; padding: 8px 4px 7px; border: 1px solid var(--line); display: grid; gap: 7px; place-items: center; background: rgb(255 255 255 / 18%); }
+.shortcut-item kbd { max-width: 100%; overflow: hidden; color: var(--ink); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.shortcut-item > span { color: var(--muted); font: 500 9px/1 "SFMono-Regular", Consolas, monospace; }
 
 .settings-link { width: 100%; padding: 14px 0 0; border: 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; background: transparent; color: var(--muted); cursor: pointer; font-size: 11px; }
 .settings-link:hover { color: var(--ink); }
