@@ -1,4 +1,10 @@
-const progressActivity = new WeakMap<HTMLVideoElement, number>();
+interface ProgressActivity {
+  at: number;
+  order: number;
+}
+
+const progressActivity = new WeakMap<HTMLVideoElement, ProgressActivity>();
+let progressOrder = 0;
 let activityTrackingInstalled = false;
 
 export function installVideoActivityTracking(): void {
@@ -9,7 +15,10 @@ export function installVideoActivityTracking(): void {
     "timeupdate",
     (event) => {
       if (event.target instanceof HTMLVideoElement) {
-        progressActivity.set(event.target, performance.now());
+        progressActivity.set(event.target, {
+          at: performance.now(),
+          order: ++progressOrder
+        });
       }
     },
     true
@@ -41,7 +50,7 @@ export function visibleMetrics(video: HTMLVideoElement): {
 export function scoreVideo(video: HTMLVideoElement, now = performance.now()): number {
   const { visible, ratio, area, validSize } = visibleMetrics(video);
   const playing = !video.paused && !video.ended && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA;
-  const recentlyProgressed = now - (progressActivity.get(video) ?? -Infinity) < 1_500;
+  const recentlyProgressed = now - (progressActivity.get(video)?.at ?? -Infinity) < 1_500;
 
   let score = 0;
   if (playing && visible) score += 10_000;
@@ -60,5 +69,21 @@ export function findPrimaryVideo(videos = Array.from(document.querySelectorAll("
   if (videos.length === 0) return null;
   if (videos.length === 1) return videos[0];
 
-  return videos.reduce((best, video) => (scoreVideo(video) > scoreVideo(best) ? video : best));
+  const now = performance.now();
+  const activeVisibleVideos = videos.filter((video) => {
+    const { visible } = visibleMetrics(video);
+    return visible && !video.paused && !video.ended && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA;
+  });
+  const candidates = activeVisibleVideos.length > 0 ? activeVisibleVideos : videos;
+  const recentlyProgressed = candidates.filter(
+    (video) => now - (progressActivity.get(video)?.at ?? -Infinity) < 1_500
+  );
+
+  if (recentlyProgressed.length > 0) {
+    return recentlyProgressed.reduce((best, video) =>
+      (progressActivity.get(video)?.order ?? 0) > (progressActivity.get(best)?.order ?? 0) ? video : best
+    );
+  }
+
+  return candidates.reduce((best, video) => (scoreVideo(video, now) > scoreVideo(best, now) ? video : best));
 }

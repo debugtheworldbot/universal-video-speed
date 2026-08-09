@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { findPrimaryVideo, scoreVideo } from "./video-target";
+import { findPrimaryVideo, installVideoActivityTracking, scoreVideo } from "./video-target";
 
 function videoWithRect(rect: Partial<DOMRect>, state: { paused?: boolean; muted?: boolean } = {}): HTMLVideoElement {
   const video = document.createElement("video");
@@ -45,5 +45,17 @@ describe("video targeting", () => {
     );
     const visible = videoWithRect({ left: 80, right: 1080, width: 1000, height: 600, bottom: 600 });
     expect(findPrimaryVideo([hiddenPreview, visible])).toBe(visible);
+  });
+
+  it("prefers the visible playing video that most recently advanced", () => {
+    installVideoActivityTracking();
+    const first = videoWithRect({ left: 0, right: 640, width: 640, height: 360, bottom: 360 }, { paused: false });
+    const current = videoWithRect({ left: 640, right: 1280, width: 640, height: 360, bottom: 360 }, { paused: false });
+    document.body.append(first, current);
+
+    first.dispatchEvent(new Event("timeupdate"));
+    current.dispatchEvent(new Event("timeupdate"));
+
+    expect(findPrimaryVideo([first, current])).toBe(current);
   });
 });
