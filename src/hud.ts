@@ -10,10 +10,11 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
       zIndex: "2147483647",
       pointerEvents: "none",
       padding: "10px 16px",
-      borderRadius: "12px",
+      border: "2px solid rgba(232, 255, 71, 0.92)",
+      borderRadius: "10px",
       color: "white",
-      background: "rgba(16, 16, 18, 0.78)",
-      boxShadow: "0 8px 28px rgba(0, 0, 0, 0.24)",
+      background: "rgba(16, 16, 18, 0.88)",
+      boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.55), 0 10px 30px rgba(0, 0, 0, 0.32)",
       backdropFilter: "blur(12px)",
       font: "600 22px/1.1 system-ui, -apple-system, sans-serif",
       letterSpacing: "-0.02em",
@@ -42,5 +43,5 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
     if (!hud) return;
     hud.style.opacity = "0";
     hud.style.transform = "translate(-50%, -50%) scale(0.96)";
-  }, 500);
+  }, 900);
 }
