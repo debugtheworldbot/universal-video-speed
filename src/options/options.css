@@ -102,7 +102,7 @@ h2 {
 }
 .map-list-header {
   display: grid;
-  grid-template-columns: 72px 22px 88px 28px;
+  grid-template-columns: 72px 22px 72px 28px;
   gap: 6px;
   align-items: center;
   padding: 8px 0 6px;
@@ -114,7 +114,7 @@ h2 {
 }
 .map-row {
   display: grid;
-  grid-template-columns: 72px 22px 88px 28px;
+  grid-template-columns: 72px 22px 72px 28px;
   gap: 6px;
   align-items: center;
   min-height: 44px;
@@ -159,16 +159,12 @@ h2 {
 }
 
 .rate-field {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  display: block;
   width: 100%;
   min-width: 0;
 }
 .rate-field input {
-  flex: 1 1 auto;
-  width: 0;
-  min-width: 0;
+  width: 100%;
   min-height: 36px;
   padding: 0 8px;
   border: 1px solid #bbb9ae;
@@ -186,14 +182,6 @@ h2 {
   background: #fffef9;
   box-shadow: 0 0 0 3px var(--signal);
 }
-.unit {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1;
-  user-select: none;
-}
 
 input[type="number"] { appearance: textfield; }
 input::-webkit-inner-spin-button { appearance: none; }
@@ -202,7 +190,7 @@ input::-webkit-inner-spin-button { appearance: none; }
 .creator-list .map-list-header.creator-header,
 .creator-row {
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr) 96px 28px;
+  grid-template-columns: 104px minmax(0, 1fr) 72px 28px;
   gap: 10px;
   align-items: start;
 }
@@ -403,13 +391,13 @@ input::-webkit-inner-spin-button { appearance: none; }
   .page { width: calc(100% - 28px); padding-top: 16px; }
   .map-list-header,
   .map-row {
-    grid-template-columns: 64px 18px 80px 26px;
+    grid-template-columns: 64px 18px 64px 26px;
   }
   .creator-list .map-list-header.creator-header {
     display: none;
   }
   .creator-row {
-    grid-template-columns: minmax(0, 1fr) 96px 28px;
+    grid-template-columns: minmax(0, 1fr) 72px 28px;
     grid-template-areas:
       "site rate remove"
       "creator creator creator";

@@ -142,7 +142,6 @@ function Options(): React.JSX.Element {
                     value={row.rate}
                     onChange={(event) => updateRow(row.id, { rate: event.target.value })}
                   />
-                  <span className="unit" aria-hidden="true">×</span>
                 </label>
                 <button
                   className="remove"
@@ -230,7 +229,6 @@ function Options(): React.JSX.Element {
                       value={row.rate}
                       onChange={(event) => updateCreatorRow(row.id, { rate: event.target.value })}
                     />
-                    <span className="unit" aria-hidden="true">×</span>
                   </label>
                   <button
                     className="remove"
