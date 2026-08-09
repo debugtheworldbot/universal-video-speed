@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "zip": "npm run build && (cd dist && zip -r -FS ../universal-video-speed.zip .)",
     "check": "tsc --noEmit && vitest run",
     "test": "vitest run"
   },

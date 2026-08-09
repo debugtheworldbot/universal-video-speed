@@ -28,8 +28,11 @@ Requires Node.js 20.19 or newer.
 npm install
 npm run check
 npm run build
+npm run zip
 ```
 
 Then open `chrome://extensions`, enable Developer mode, choose **Load unpacked**, and select `dist/`.
+
+`npm run zip` rebuilds the extension and creates `universal-video-speed.zip` for distribution.
 
 Clicking the extension icon opens the creator shortcut popup. Settings are stored with `chrome.storage.sync`.
