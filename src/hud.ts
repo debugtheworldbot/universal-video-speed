@@ -1,7 +1,25 @@
 let hud: HTMLDivElement | null = null;
 let hideTimer: number | undefined;
+let positionFrame: number | undefined;
 const VIDEO_INSET = 18;
-const VIEWPORT_MARGIN = 12;
+
+function trackVideoPosition(video: HTMLVideoElement): void {
+  if (positionFrame !== undefined) window.cancelAnimationFrame(positionFrame);
+
+  const update = (): void => {
+    if (!hud || !video.isConnected) {
+      positionFrame = undefined;
+      return;
+    }
+
+    const rect = video.getBoundingClientRect();
+    hud.style.left = `${rect.left + VIDEO_INSET}px`;
+    hud.style.top = `${rect.top + VIDEO_INSET}px`;
+    positionFrame = window.requestAnimationFrame(update);
+  };
+
+  update();
+}
 
 export function showRateHud(video: HTMLVideoElement, rate: number): void {
   if (!hud || !hud.isConnected) {
@@ -34,18 +52,16 @@ export function showRateHud(video: HTMLVideoElement, rate: number): void {
     : document.documentElement;
   if (hud.parentElement !== overlayRoot) overlayRoot.append(hud);
 
-  const rect = video.getBoundingClientRect();
   hud.textContent = `${Number.isInteger(rate) ? rate.toFixed(0) : rate}×`;
-  const maxLeft = Math.max(VIEWPORT_MARGIN, innerWidth - hud.offsetWidth - VIEWPORT_MARGIN);
-  const maxTop = Math.max(VIEWPORT_MARGIN, innerHeight - hud.offsetHeight - VIEWPORT_MARGIN);
-  hud.style.left = `${Math.min(maxLeft, Math.max(VIEWPORT_MARGIN, rect.left + VIDEO_INSET))}px`;
-  hud.style.top = `${Math.min(maxTop, Math.max(VIEWPORT_MARGIN, rect.top + VIDEO_INSET))}px`;
+  trackVideoPosition(video);
   hud.style.opacity = "1";
   hud.style.transform = "scale(1)";
 
   window.clearTimeout(hideTimer);
   hideTimer = window.setTimeout(() => {
     if (!hud) return;
+    if (positionFrame !== undefined) window.cancelAnimationFrame(positionFrame);
+    positionFrame = undefined;
     hud.style.opacity = "0";
     hud.style.transform = "scale(0.96)";
   }, 900);
