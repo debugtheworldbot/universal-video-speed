@@ -26,10 +26,6 @@ function shortcutLabel(key: string): string {
   return key.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
-function platformLabel(site: CreatorSite): string {
-  return site === "youtube" ? "YouTube" : "Bilibili";
-}
-
 function Options(): React.JSX.Element {
   const [rows, setRows] = useState<Row[]>(mappingToRows(DEFAULT_SETTINGS.shortcuts));
   const [creatorRows, setCreatorRows] = useState<CreatorRow[]>(rulesToRows(DEFAULT_SETTINGS.creatorRules));
@@ -222,9 +218,7 @@ function Options(): React.JSX.Element {
                       placeholder={row.site === "youtube" ? "URL, @handle, or channel ID" : "Space URL or UID"}
                       onChange={(event) => updateCreatorRow(row.id, { creator: event.target.value, creatorName: "" })}
                     />
-                    <span className={row.creatorName ? "creator-name" : "creator-name empty"}>
-                      {row.creatorName || `Name appears after ${platformLabel(row.site)} detection`}
-                    </span>
+                    {row.creatorName ? <span className="creator-name">{row.creatorName}</span> : null}
                   </label>
                   <label className="rate-field">
                     <span className="sr-only">Default playback speed</span>
