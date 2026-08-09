@@ -28,7 +28,7 @@ Browser-internal pages, browser extension stores, and other protected pages do n
 
 ### Troubleshooting
 
-Open the affected page's DevTools, select **Console**, and filter for `[Universal Video Speed]`. The extension logs whether its content script and settings loaded, why a configured shortcut was ignored, how many videos were found in the focused frame, and whether the requested playback rate remained applied after 0, 250, and 1,000 milliseconds.
+Open the affected page's DevTools, select **Console**, and filter for `[Universal Video Speed]`. The extension logs whether its content script and settings loaded, the raw key and code observed by both window- and document-level capture listeners, why a configured shortcut was ignored, how many videos were found in the focused frame, and whether the requested playback rate remained applied after 0, 250, and 1,000 milliseconds.
 
 You can replace the defaults with any single non-modifier key from the extension's settings page.
 

@@ -12,6 +12,7 @@ import {
 
 const LOG_PREFIX = "[Universal Video Speed]";
 let settings: Settings = DEFAULT_SETTINGS;
+const handledKeyboardEvents = new WeakSet<KeyboardEvent>();
 
 function frameLabel(): "top" | "iframe" {
   return window === window.top ? "top" : "iframe";
@@ -82,7 +83,7 @@ function reportPlaybackBadge(reset = false, forceStopped = false): void {
 void chrome.storage.sync.get("settings").then(({ settings: saved }) => {
   settings = normalizeSettings(saved);
   console.info(`${LOG_PREFIX} settings loaded`, {
-    shortcutKeys: Object.keys(settings.shortcuts),
+    shortcuts: JSON.stringify(settings.shortcuts),
     disabledForHost: isHostDisabled(location.hostname, settings.disabledHosts),
     frame: frameLabel()
   });
@@ -95,7 +96,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync" && changes.settings) {
     settings = normalizeSettings(changes.settings.newValue);
     console.info(`${LOG_PREFIX} settings updated`, {
-      shortcutKeys: Object.keys(settings.shortcuts),
+      shortcuts: JSON.stringify(settings.shortcuts),
       disabledForHost: isHostDisabled(location.hostname, settings.disabledHosts),
       frame: frameLabel()
     });
@@ -162,7 +163,18 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
 });
 
 function onKeyDown(event: KeyboardEvent): void {
-  const rate = settings.shortcuts[event.key];
+  if (handledKeyboardEvents.has(event)) return;
+  handledKeyboardEvents.add(event);
+
+  const digitFromCode = !event.shiftKey ? event.code.match(/^Digit([0-9])$/)?.[1] : undefined;
+  const rate = settings.shortcuts[event.key] ?? (digitFromCode ? settings.shortcuts[digitFromCode] : undefined);
+  console.info(`${LOG_PREFIX} keydown observed`, {
+    key: event.key,
+    code: event.code,
+    mappedRate: rate ?? null,
+    target: event.target instanceof Element ? event.target.tagName.toLowerCase() : "unknown",
+    frame: frameLabel()
+  });
   if (rate === undefined) return;
 
   const ignoredReason = event.repeat ? "repeated key"
@@ -217,6 +229,7 @@ function onKeyDown(event: KeyboardEvent): void {
 installVideoActivityTracking();
 installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
+document.addEventListener("keydown", onKeyDown, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
 for (const eventName of ["play", "playing", "pause", "ended", "ratechange", "loadedmetadata"] as const) {
