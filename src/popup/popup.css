@@ -25,13 +25,14 @@ button, select { font: inherit; }
 
 h1 { margin: 18px 0 5px; font-size: 29px; line-height: 1.04; letter-spacing: -.055em; font-weight: 650; overflow-wrap: anywhere; }
 .creator-id { margin: 0; color: var(--muted); font: 500 10px/1.4 "SFMono-Regular", Consolas, monospace; overflow-wrap: anywhere; }
-.rate-control { margin-top: 34px; padding: 13px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; font-weight: 600; }
-.select-wrap { position: relative; padding-right: 16px; }
-.select-wrap::after { content: "↓"; position: absolute; right: 0; top: 50%; translate: 0 -50%; pointer-events: none; font: 600 12px/1 "SFMono-Regular", Consolas, monospace; }
-select { max-width: 135px; border: 0; border-radius: 0; outline: none; appearance: none; background: transparent; color: var(--ink); cursor: pointer; font-size: 18px; font-weight: 700; text-align: right; }
-select:focus-visible { box-shadow: 0 2px var(--ink); }
+.rate-control { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 12px; font-weight: 600; }
+.select-wrap { position: relative; min-width: 88px; border: 1px solid var(--ink); background: var(--ink); color: white; box-shadow: 3px 3px 0 var(--signal); transition: translate 120ms, box-shadow 120ms; }
+.select-wrap:hover { translate: 1px 1px; box-shadow: 2px 2px 0 var(--signal); }
+.select-wrap:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
+.select-wrap::after { content: "↓"; position: absolute; right: 10px; top: 50%; translate: 0 -50%; pointer-events: none; font: 600 10px/1 "SFMono-Regular", Consolas, monospace; }
+select { width: 100%; max-width: 135px; padding: 8px 28px 8px 11px; border: 0; border-radius: 0; outline: none; appearance: none; background: transparent; color: white; cursor: pointer; font-size: 17px; line-height: 1; font-weight: 700; text-align: right; }
 select:disabled { opacity: .55; }
-.note { margin: 12px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.note { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
 
 .state-card h1 { max-width: 275px; margin-top: 12px; }
 .state-card > p:last-child { color: var(--muted); font-size: 12px; line-height: 1.55; }
