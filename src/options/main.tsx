@@ -100,17 +100,15 @@ function Options(): React.JSX.Element {
         <div className="hero-copy">
           <p className="eyebrow">Universal Video Speed</p>
           <h1 id="page-title">Settings</h1>
-          <p className="lede">Map keys to speeds. Optionally pin defaults for creators you watch often.</p>
+          <p className="lede">Map keys to speeds, and pin defaults for creators you watch often.</p>
         </div>
       </header>
 
       <div className="settings" aria-label="Playback settings">
         <section className="panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
-            <div>
-              <h2 id="shortcuts-title">Keyboard shortcuts</h2>
-              <p className="hint">Press a key on any video page (not while typing) to jump to that speed.</p>
-            </div>
+            <h2 id="shortcuts-title">Shortcuts</h2>
+            <p className="hint">Works when you’re not typing.</p>
           </div>
 
           <div className="map-list" aria-busy={!loaded}>
@@ -179,19 +177,15 @@ function Options(): React.JSX.Element {
 
         <section className="panel" aria-labelledby="creators-title">
           <div className="panel-head">
-            <div>
-              <h2 id="creators-title">Creator defaults</h2>
-              <p className="hint">
-                Auto-apply a speed when that creator’s video loads. Easiest from the extension popup on a video page.
-              </p>
-            </div>
+            <h2 id="creators-title">Creator defaults</h2>
+            <p className="hint">Applied when a creator’s video loads. Easiest via popup.</p>
           </div>
 
           {creatorRows.length === 0 ? (
             <div className="empty" aria-busy={!loaded}>
               <p className="empty-title">No creator defaults yet</p>
               <p className="empty-body">
-                Open a YouTube or Bilibili video, click the extension icon, and set a default speed there — or add one manually below.
+                On a YouTube or Bilibili video, open the extension popup and set a default — or add one manually.
               </p>
             </div>
           ) : (
@@ -229,7 +223,7 @@ function Options(): React.JSX.Element {
                       onChange={(event) => updateCreatorRow(row.id, { creator: event.target.value, creatorName: "" })}
                     />
                     <span className={row.creatorName ? "creator-name" : "creator-name empty"}>
-                      {row.creatorName || `Resolves after you open a ${platformLabel(row.site)} video from this creator`}
+                      {row.creatorName || `Name appears after ${platformLabel(row.site)} detection`}
                     </span>
                   </label>
                   <label className="rate-field">
@@ -271,7 +265,7 @@ function Options(): React.JSX.Element {
               ]);
             }}
           >
-            + Add creator manually
+            + Add creator
           </button>
         </section>
       </div>
