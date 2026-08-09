@@ -97,9 +97,6 @@ h2 {
 }
 
 /* —— Shared map list (key → speed) —— */
-.map-list {
-  border-top: 1px solid var(--ink);
-}
 .map-list-header {
   display: grid;
   grid-template-columns: 72px 22px 72px 28px;
@@ -120,6 +117,10 @@ h2 {
   min-height: 44px;
   padding: 4px 0;
   border-bottom: 1px solid var(--line);
+}
+.map-row:last-child,
+.creator-row:last-child {
+  border-bottom: 0;
 }
 .map-arrow {
   text-align: center;
