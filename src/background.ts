@@ -1,7 +1,7 @@
 import { formatPlaybackBadgeRate, formatPlaybackBadgeText, isPlaybackBadgeMessage } from "./playback-badge";
 
 interface FramePlaybackState {
-  playing: boolean;
+  hasVideo: boolean;
   rate?: number;
   updatedAt: number;
 }
@@ -12,7 +12,7 @@ async function renderBadge(tabId: number): Promise<void> {
   const frameStates = tabPlaybackStates.get(tabId);
   const activeState = frameStates
     ? [...frameStates.values()]
-        .filter((state): state is FramePlaybackState & { rate: number } => state.playing && state.rate !== undefined)
+        .filter((state): state is FramePlaybackState & { rate: number } => state.hasVideo && state.rate !== undefined)
         .sort((a, b) => b.updatedAt - a.updatedAt)[0]
     : undefined;
   const rateText = activeState ? formatPlaybackBadgeRate(activeState.rate) : "";
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
 
   const frameStates = tabPlaybackStates.get(tabId) ?? new Map<number, FramePlaybackState>();
   frameStates.set(frameId, {
-    playing: message.playing,
+    hasVideo: message.hasVideo,
     rate: message.rate,
     updatedAt: Date.now()
   });

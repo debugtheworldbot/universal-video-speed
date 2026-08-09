@@ -9,11 +9,10 @@ let settings: Settings = DEFAULT_SETTINGS;
 
 function reportPlaybackBadge(reset = false, forceStopped = false): void {
   const video = forceStopped ? null : findPrimaryVideo();
-  const playing = Boolean(video && !video.paused && !video.ended);
   const message: PlaybackBadgeMessage = {
     type: PLAYBACK_BADGE_MESSAGE,
-    playing,
-    ...(playing && video ? { rate: video.playbackRate } : {}),
+    hasVideo: video !== null,
+    ...(video ? { rate: video.playbackRate } : {}),
     ...(reset ? { reset: true } : {})
   };
   void chrome.runtime.sendMessage(message).catch(() => undefined);
@@ -41,7 +40,10 @@ let creatorDefaultTimer: number | undefined;
 
 function scheduleCreatorDefault(): void {
   window.clearTimeout(creatorDefaultTimer);
-  creatorDefaultTimer = window.setTimeout(applyCreatorDefault, 100);
+  creatorDefaultTimer = window.setTimeout(() => {
+    applyCreatorDefault();
+    reportPlaybackBadge();
+  }, 100);
 }
 
 function applyCreatorDefault(): void {

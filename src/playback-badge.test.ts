@@ -22,13 +22,13 @@ describe("playback badge", () => {
     expect(formatPlaybackBadgeText(0.75)).toBe("0.75");
   });
 
-  it("accepts playing and stopped state messages", () => {
-    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, playing: true, rate: 2 })).toBe(true);
-    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, playing: false })).toBe(true);
+  it("accepts video-present and video-absent state messages", () => {
+    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: true, rate: 2 })).toBe(true);
+    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: false })).toBe(true);
   });
 
-  it("rejects a playing message without a valid rate", () => {
-    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, playing: true })).toBe(false);
-    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, playing: true, rate: 0 })).toBe(false);
+  it("rejects a video-present message without a valid rate", () => {
+    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: true })).toBe(false);
+    expect(isPlaybackBadgeMessage({ type: PLAYBACK_BADGE_MESSAGE, hasVideo: true, rate: 0 })).toBe(false);
   });
 });
