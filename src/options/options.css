@@ -227,7 +227,14 @@ input::-webkit-inner-spin-button { appearance: none; }
   gap: 5px;
   min-width: 0;
 }
+.creator-input-row {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
 .creator-input {
+  flex: 1;
+  min-width: 0;
   width: 100%;
   min-height: 36px;
   padding: 0 10px;
@@ -246,6 +253,31 @@ input::-webkit-inner-spin-button { appearance: none; }
   background: #fffef9;
   box-shadow: 0 0 0 3px var(--signal);
 }
+.creator-loading {
+  min-height: 36px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: white;
+  font: 500 9px/1 "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+.creator-spinner {
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid rgba(255, 255, 255, .4);
+  border-top-color: var(--signal);
+  border-radius: 50%;
+  animation: creator-spin 700ms linear infinite;
+}
+@keyframes creator-spin { to { transform: rotate(360deg); } }
 .creator-name {
   display: block;
   overflow: hidden;
@@ -413,4 +445,5 @@ input::-webkit-inner-spin-button { appearance: none; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+  .creator-spinner { animation: none; }
 }

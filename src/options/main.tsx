@@ -255,24 +255,32 @@ function Options(): React.JSX.Element {
                       <option value="bilibili">Bilibili</option>
                     </select>
                   </label>
-                  <label className="creator-identity">
-                    <span className="sr-only">Channel or creator URL/ID</span>
-                    <input
-                      className="creator-input"
-                      value={row.creator}
-                      placeholder={row.site === "youtube" ? "URL, @handle, or channel ID" : "Space URL or UID"}
-                      onChange={(event) => updateCreatorRow(row.id, {
-                        creator: event.target.value,
-                        creatorName: "",
-                        resolution: "idle"
-                      })}
-                    />
-                    {row.resolution === "resolving" ? <span className="creator-name">Looking up creator…</span> : null}
+                  <div className="creator-identity">
+                    <label className="sr-only" htmlFor={`creator-${row.id}`}>Channel or creator URL/ID</label>
+                    <div className="creator-input-row">
+                      <input
+                        id={`creator-${row.id}`}
+                        className="creator-input"
+                        value={row.creator}
+                        placeholder={row.site === "youtube" ? "URL, @handle, or channel ID" : "Space URL or UID"}
+                        onChange={(event) => updateCreatorRow(row.id, {
+                          creator: event.target.value,
+                          creatorName: "",
+                          resolution: "idle"
+                        })}
+                      />
+                      {row.resolution === "resolving" ? (
+                        <button className="creator-loading" type="button" disabled aria-label="Looking up creator">
+                          <span className="creator-spinner" aria-hidden="true" />
+                          Loading
+                        </button>
+                      ) : null}
+                    </div>
                     {row.creatorName ? <span className="creator-name">{row.creatorName}</span> : null}
                     {row.resolution === "error" ? (
                       <span className="creator-name creator-name-error">Couldn’t load nickname. You can still save this creator.</span>
                     ) : null}
-                  </label>
+                  </div>
                   <label className="rate-field">
                     <span className="sr-only">Default playback speed</span>
                     <input
