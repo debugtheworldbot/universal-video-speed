@@ -1,6 +1,6 @@
 # Universal Video Speed
 
-One keyboard shortcut. Any video.
+Keyboard playback-speed shortcuts for YouTube and Bilibili.
 
 ## Default shortcuts
 
@@ -10,7 +10,7 @@ One keyboard shortcut. Any video.
 - `2` → 2×
 - `3` → 3×
 
-Shortcuts are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
+Shortcuts are injected only on YouTube and Bilibili. They are ignored while typing, composing text, or holding Meta, Ctrl, or Alt. When a page contains multiple videos, the extension ranks playback state, viewport visibility, rendered area, recent progress, and mute state to choose the most likely active video.
 
 You can replace the defaults with any single non-modifier key from the extension's settings page.
 
@@ -32,4 +32,4 @@ npm run build
 
 Then open `chrome://extensions`, enable Developer mode, choose **Load unpacked**, and select `dist/`.
 
-Clicking the extension icon opens the shortcut settings page. Settings are stored with `chrome.storage.sync`.
+Clicking the extension icon opens the creator shortcut popup. Settings are stored with `chrome.storage.sync`.

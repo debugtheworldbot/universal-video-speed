@@ -1,8 +1,6 @@
 import { showRateHud } from "./hud";
-import { debugLog, videoDebugInfo } from "./debug";
 import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-rate";
 import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
-import { resolveShortcutRate, shortcutEventId } from "./shortcut-key";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
 
@@ -10,22 +8,12 @@ let settings: Settings = DEFAULT_SETTINGS;
 
 void chrome.storage.sync.get("settings").then(({ settings: saved }) => {
   settings = normalizeSettings(saved);
-  debugLog("settings-loaded", {
-    shortcutKeys: Object.keys(settings.shortcuts),
-    disabledOnHost: isHostDisabled(location.hostname, settings.disabledHosts)
-  });
   scheduleCreatorDefault();
-}).catch((error: unknown) => {
-  debugLog("settings-load-failed", { error: error instanceof Error ? error.message : String(error) });
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync" && changes.settings) {
     settings = normalizeSettings(changes.settings.newValue);
-    debugLog("settings-changed", {
-      shortcutKeys: Object.keys(settings.shortcuts),
-      disabledOnHost: isHostDisabled(location.hostname, settings.disabledHosts)
-    });
     scheduleCreatorDefault();
   }
 });
@@ -72,126 +60,34 @@ if (window === window.top) {
   });
 }
 
-const handledShortcutKeys = new Set<string>();
-const directKeyUpTimes = new Map<string, number>();
-
-interface RelayedKeyEvent {
-  key: string;
-  code: string;
-  repeat: boolean;
-  isComposing: boolean;
-  metaKey: boolean;
-  ctrlKey: boolean;
-  altKey: boolean;
-  shiftKey: boolean;
-  editable: boolean;
-}
-
-function handleShortcut(event: KeyboardEvent, phase: "keydown" | "keyup" | "relayed-keyup", editableOverride?: boolean): boolean {
-  const editable = editableOverride ?? isEditableTarget(event);
-  const disabledOnHost = isHostDisabled(location.hostname, settings.disabledHosts);
-  const rate = resolveShortcutRate(event, settings.shortcuts);
-  const shouldLog = rate !== undefined || /^(?:Digit|Numpad)\d$/.test(event.code);
-
-  if (shouldLog) {
-    debugLog("key-event", {
-      phase,
-      key: event.key,
-      code: event.code,
-      repeat: event.repeat,
-      composing: event.isComposing,
-      modifiers: { meta: event.metaKey, ctrl: event.ctrlKey, alt: event.altKey, shift: event.shiftKey },
-      editable,
-      disabledOnHost,
-      resolvedRate: rate ?? null
-    });
+function onKeyDown(event: KeyboardEvent): void {
+  if (
+    event.repeat ||
+    event.isComposing ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.altKey ||
+    isEditableTarget(event) ||
+    isHostDisabled(location.hostname, settings.disabledHosts)
+  ) {
+    return;
   }
 
-  if (event.repeat || event.isComposing || event.metaKey || event.ctrlKey || event.altKey || editable || disabledOnHost) {
-    if (shouldLog) debugLog("shortcut-ignored", { phase, reason: "guard-condition" });
-    return false;
-  }
-
-  if (rate === undefined) {
-    if (shouldLog) debugLog("shortcut-ignored", { phase, reason: "no-mapping" });
-    return false;
-  }
+  const rate = settings.shortcuts[event.key];
+  if (rate === undefined) return;
 
   const video = findPrimaryVideo();
-  if (!video) {
-    debugLog("shortcut-ignored", { phase, reason: "no-video", videoCount: document.querySelectorAll("video").length });
-    return false;
-  }
-
-  debugLog("video-selected", {
-    phase,
-    requestedRate: rate,
-    videoCount: document.querySelectorAll("video").length,
-    video: videoDebugInfo(video)
-  });
+  if (!video) return;
 
   event.preventDefault();
   event.stopImmediatePropagation();
   setVideoPlaybackRate(video, rate);
   showRateHud(video, rate);
-  debugLog("shortcut-applied", { phase, requestedRate: rate, video: videoDebugInfo(video) });
-  window.setTimeout(() => {
-    debugLog("shortcut-check-500ms", { requestedRate: rate, video: videoDebugInfo(video) });
-  }, 500);
-  return true;
 }
-
-function onKeyDown(event: KeyboardEvent): void {
-  if (handleShortcut(event, "keydown")) handledShortcutKeys.add(shortcutEventId(event));
-}
-
-function onKeyUp(event: KeyboardEvent): void {
-  const id = shortcutEventId(event);
-  directKeyUpTimes.set(id, performance.now());
-  if (handledShortcutKeys.delete(id)) {
-    debugLog("keyup-deduplicated", { key: event.key, code: event.code });
-    return;
-  }
-  handleShortcut(event, "keyup");
-}
-
-function isRelayedKeyEvent(value: unknown): value is RelayedKeyEvent {
-  if (!value || typeof value !== "object") return false;
-  const event = value as Partial<RelayedKeyEvent>;
-  return (
-    typeof event.key === "string" &&
-    typeof event.code === "string" &&
-    typeof event.repeat === "boolean" &&
-    typeof event.isComposing === "boolean" &&
-    typeof event.metaKey === "boolean" &&
-    typeof event.ctrlKey === "boolean" &&
-    typeof event.altKey === "boolean" &&
-    typeof event.shiftKey === "boolean" &&
-    typeof event.editable === "boolean"
-  );
-}
-
-window.addEventListener("message", (event) => {
-  if (event.source !== window || !event.data || typeof event.data !== "object") return;
-  const message = event.data as { source?: unknown; version?: unknown; keyEvent?: unknown };
-  if (message.source !== "universal-video-speed-main-world" || message.version !== 1 || !isRelayedKeyEvent(message.keyEvent)) return;
-
-  const relayed = message.keyEvent;
-  const id = shortcutEventId(relayed);
-  if (performance.now() - (directKeyUpTimes.get(id) ?? -Infinity) < 250) {
-    debugLog("main-world-keyup-deduplicated", { key: relayed.key, code: relayed.code });
-    return;
-  }
-
-  debugLog("main-world-keyup-received", { key: relayed.key, code: relayed.code });
-  const syntheticEvent = new KeyboardEvent("keyup", relayed);
-  handleShortcut(syntheticEvent, "relayed-keyup", relayed.editable);
-});
 
 installVideoActivityTracking();
 installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
-window.addEventListener("keyup", onKeyUp, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
 
@@ -203,10 +99,3 @@ function observeCreatorChanges(): void {
 
 if (document.documentElement) observeCreatorChanges();
 else document.addEventListener("DOMContentLoaded", observeCreatorChanges, { once: true });
-
-debugLog("content-script-ready", {
-  version: chrome.runtime.getManifest().version,
-  hostname: location.hostname,
-  frame: window === window.top ? "top" : "child",
-  readyState: document.readyState
-});
