@@ -11,6 +11,7 @@ export interface PlaybackBadgeMessage {
 export interface PlaybackRateCommandMessage {
   type: typeof PLAYBACK_RATE_COMMAND_MESSAGE;
   rate: number;
+  source: "keyboard-relay" | "popup";
 }
 
 export function isPlaybackBadgeMessage(message: unknown): message is PlaybackBadgeMessage {
@@ -27,7 +28,8 @@ export function isPlaybackRateCommandMessage(message: unknown): message is Playb
     typeof candidate.rate === "number" &&
     Number.isFinite(candidate.rate) &&
     candidate.rate >= 0.25 &&
-    candidate.rate <= 16;
+    candidate.rate <= 16 &&
+    (candidate.source === "keyboard-relay" || candidate.source === "popup");
 }
 
 export function formatPlaybackBadgeRate(rate: number): string {

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { findCreatorRule, type CreatorContext, type CreatorContextResponse } from "../creator-defaults";
 import { localizeDocument, t } from "../i18n";
+import { PLAYBACK_RATE_COMMAND_MESSAGE } from "../playback-badge";
 import { normalizeSettings } from "../settings";
 import "./popup.css";
 
@@ -47,6 +48,16 @@ async function saveCreatorRate(context: CreatorContext, rate: number | null): Pr
     });
   }
   await chrome.storage.sync.set({ settings: { ...settings, creatorRules } });
+}
+
+async function applyPlaybackRate(rate: number): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) throw new Error("No active tab");
+  await chrome.tabs.sendMessage(tab.id, {
+    type: PLAYBACK_RATE_COMMAND_MESSAGE,
+    rate,
+    source: "popup"
+  });
 }
 
 function Popup(): React.JSX.Element {
@@ -138,10 +149,20 @@ function Popup(): React.JSX.Element {
         </div>
         <div className="shortcut-grid">
           {shortcuts.map(([key, shortcutRate]) => (
-            <div className="shortcut-item" key={key} aria-label={t("shortcut_speed_aria", [shortcutLabel(key), String(shortcutRate)])}>
+            <button
+              className="shortcut-item"
+              key={key}
+              type="button"
+              aria-label={t("shortcut_speed_aria", [shortcutLabel(key), String(shortcutRate)])}
+              onClick={() => {
+                void applyPlaybackRate(shortcutRate).then(() => window.close()).catch((error: unknown) => {
+                  console.error("[Universal Video Speed] popup failed to apply playback rate", error);
+                });
+              }}
+            >
               <kbd>{shortcutLabel(key)}</kbd>
               <span>{shortcutRate}×</span>
-            </div>
+            </button>
           ))}
         </div>
       </section>

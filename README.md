@@ -32,6 +32,8 @@ Open the affected page's DevTools, select **Console**, and filter for `[Universa
 
 You can replace the defaults with any single non-modifier key from the extension's settings page.
 
+The shortcut cards in the extension popup are also clickable and apply their displayed speed directly to the active tab.
+
 ## Creator defaults
 
 Keyboard shortcuts work across the web. Creator-specific defaults are available for individual YouTube channels and Bilibili creators. From the settings page, paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. Valid entries are resolved to a stable ID and display their current nickname automatically. The creator speed is applied once when each video loads, so you can still change it afterward.

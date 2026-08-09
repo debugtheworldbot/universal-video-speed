@@ -31,7 +31,7 @@ function videoState(video: HTMLVideoElement): Record<string, number | boolean> {
   };
 }
 
-function applyPlaybackRate(video: HTMLVideoElement, rate: number, source: "keyboard" | "frame relay"): void {
+function applyPlaybackRate(video: HTMLVideoElement, rate: number, source: "keyboard" | "keyboard-relay" | "popup"): void {
   console.info(`${LOG_PREFIX} applying playback rate`, {
     requestedRate: rate,
     source,
@@ -155,9 +155,10 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
 
   console.info(`${LOG_PREFIX} cross-frame shortcut received`, {
     rate: message.rate,
+    source: message.source,
     frame: frameLabel()
   });
-  applyPlaybackRate(video, message.rate, "frame relay");
+  applyPlaybackRate(video, message.rate, message.source);
 });
 
 function onKeyDown(event: KeyboardEvent): void {
@@ -197,7 +198,8 @@ function onKeyDown(event: KeyboardEvent): void {
     });
     void chrome.runtime.sendMessage({
       type: PLAYBACK_RATE_COMMAND_MESSAGE,
-      rate
+      rate,
+      source: "keyboard-relay"
     }).then(() => {
       console.info(`${LOG_PREFIX} cross-frame shortcut requested`, {
         rate,

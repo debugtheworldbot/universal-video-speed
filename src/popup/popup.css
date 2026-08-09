@@ -45,7 +45,10 @@ select:disabled { opacity: .55; }
 .shortcut-heading h2 { margin: 0; font-size: 12px; line-height: 1; letter-spacing: -.02em; }
 .shortcut-heading > span { color: var(--muted); font: 500 8px/1 "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
 .shortcut-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
-.shortcut-item { min-width: 0; padding: 8px 4px 7px; border: 1px solid var(--line); display: grid; gap: 7px; place-items: center; background: rgb(255 255 255 / 18%); }
+.shortcut-item { min-width: 0; padding: 8px 4px 7px; border: 1px solid var(--line); display: grid; gap: 7px; place-items: center; appearance: none; background: rgb(255 255 255 / 18%); color: inherit; cursor: pointer; }
+.shortcut-item:hover { border-color: var(--ink); background: var(--signal); }
+.shortcut-item:active { translate: 1px 1px; }
+.shortcut-item:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .shortcut-item kbd { max-width: 100%; overflow: hidden; color: var(--ink); font: 600 10px/1 "SFMono-Regular", Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; }
 .shortcut-item > span { color: var(--muted); font: 500 9px/1 "SFMono-Regular", Consolas, monospace; }
 
