@@ -1,0 +1,73 @@
+{
+  "extension_name": { "message": "Universal Video Speed" },
+  "extension_description": { "message": "Keyboard playback-speed shortcuts for YouTube and Bilibili." },
+  "playback_title": {
+    "message": "Universal Video Speed · $RATE$×",
+    "placeholders": { "rate": { "content": "$1" } }
+  },
+  "space_key": { "message": "Space" },
+  "settings_title": { "message": "Settings" },
+  "settings_lede": { "message": "Map keys to speeds, and pin defaults for creators you watch often." },
+  "playback_settings": { "message": "Playback settings" },
+  "shortcuts_title": { "message": "Shortcuts" },
+  "shortcuts_hint": { "message": "Works when you’re not typing." },
+  "key_label": { "message": "Key" },
+  "speed_label": { "message": "Speed" },
+  "shortcut_key": { "message": "Shortcut key" },
+  "press_key": { "message": "Press key" },
+  "playback_speed": { "message": "Playback speed" },
+  "empty_value": { "message": "empty" },
+  "remove_shortcut": {
+    "message": "Remove shortcut $KEY$",
+    "placeholders": { "key": { "content": "$1" } }
+  },
+  "add_shortcut": { "message": "+ Add shortcut" },
+  "creator_defaults_title": { "message": "Creator defaults" },
+  "creator_defaults_hint": { "message": "Applied when a creator’s video loads. Easiest via popup." },
+  "no_creator_defaults": { "message": "No creator defaults yet" },
+  "no_creator_defaults_body": { "message": "On a YouTube or Bilibili video, open the extension popup and set a default — or add one manually." },
+  "platform_label": { "message": "Platform" },
+  "creator_label": { "message": "Creator" },
+  "creator_input_label": { "message": "Channel or creator URL/ID" },
+  "youtube_creator_placeholder": { "message": "URL, @handle, or channel ID" },
+  "bilibili_creator_placeholder": { "message": "Space URL or UID" },
+  "looking_up_creator": { "message": "Looking up creator" },
+  "looking_up_creator_ellipsis": { "message": "Looking up creator…" },
+  "loading": { "message": "Loading" },
+  "creator_lookup_failed": { "message": "Couldn’t load nickname. You can still save this creator." },
+  "default_playback_speed": { "message": "Default playback speed" },
+  "remove_creator": {
+    "message": "Remove creator $CREATOR$",
+    "placeholders": { "creator": { "content": "$1" } }
+  },
+  "add_creator": { "message": "+ Add creator" },
+  "saved_synced": { "message": "Saved — synced across Chrome." },
+  "saved": { "message": "Saved" },
+  "save_changes": { "message": "Save changes" },
+  "error_shortcut_required": { "message": "Add at least one shortcut." },
+  "error_shortcut_missing": { "message": "Choose a shortcut for every row." },
+  "error_shortcut_duplicate": { "message": "Each shortcut can only be used once." },
+  "error_speed_range": { "message": "Speed must be between 0.25× and 16×." },
+  "error_creator_invalid": { "message": "Use a YouTube channel URL, @handle, channel ID, or a Bilibili space URL/UID." },
+  "error_creator_duplicate": { "message": "Each creator can only have one default speed." },
+  "error_creator_speed_range": { "message": "Creator speed must be between 0.25× and 16×." },
+  "detecting_creator": { "message": "Detecting creator…" },
+  "youtube_channel": { "message": "YouTube channel" },
+  "bilibili_creator": { "message": "Bilibili creator" },
+  "saving": { "message": "Saving" },
+  "default_speed": { "message": "Default speed" },
+  "not_set": { "message": "Not set" },
+  "creator_change_note": { "message": "Changes apply to this video now and to future videos from this creator." },
+  "no_creator_detected": { "message": "No creator detected" },
+  "open_supported_video": { "message": "Open a YouTube or Bilibili video." },
+  "popup_recognition_hint": { "message": "The popup will recognize the channel automatically." },
+  "key_speed_label": { "message": "Key / speed" },
+  "shortcut_speed_aria": {
+    "message": "$KEY$ sets speed to $RATE$ times",
+    "placeholders": {
+      "key": { "content": "$1" },
+      "rate": { "content": "$2" }
+    }
+  },
+  "all_settings": { "message": "All settings" }
+}

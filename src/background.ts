@@ -1,4 +1,5 @@
 import { formatPlaybackBadgeRate, formatPlaybackBadgeText, isPlaybackBadgeMessage } from "./playback-badge";
+import { t } from "./i18n";
 
 interface FramePlaybackState {
   hasVideo: boolean;
@@ -24,7 +25,7 @@ async function renderBadge(tabId: number): Promise<void> {
     chrome.action.setBadgeTextColor({ tabId, color: "#FFFFFF" }),
     chrome.action.setTitle({
       tabId,
-      title: activeState ? `Universal Video Speed · ${rateText}×` : "Universal Video Speed"
+      title: activeState ? t("playback_title", rateText) : t("extension_name")
     })
   ]);
 }

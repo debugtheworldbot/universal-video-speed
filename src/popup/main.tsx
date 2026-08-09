@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { findCreatorRule, type CreatorContext, type CreatorContextResponse } from "../creator-defaults";
+import { localizeDocument, t } from "../i18n";
 import { normalizeSettings } from "../settings";
 import "./popup.css";
 
 const COMMON_RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4];
 
 function shortcutLabel(key: string): string {
-  if (key === " ") return "Space";
+  if (key === " ") return t("space_key");
   return key.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
@@ -99,45 +100,45 @@ function Popup(): React.JSX.Element {
       {context === undefined ? (
         <section className="state-card loading" aria-live="polite">
           <span className="scan-line" />
-          <p>Detecting creator…</p>
+          <p>{t("detecting_creator")}</p>
         </section>
       ) : context ? (
         <section className="creator-card">
           <div className="platform-line">
             <span className={`platform-dot ${context.site}`} />
-            <span>{context.site === "youtube" ? "YouTube channel" : "Bilibili creator"}</span>
-            <span className={saving || saved ? "save-state visible" : "save-state"}>{saving ? "Saving" : "Saved"}</span>
+            <span>{context.site === "youtube" ? t("youtube_channel") : t("bilibili_creator")}</span>
+            <span className={saving || saved ? "save-state visible" : "save-state"}>{saving ? t("saving") : t("saved")}</span>
           </div>
           <h1>{context.creatorName}</h1>
           <p className="creator-id">{context.creatorId}</p>
 
           <label className="rate-control">
-            <span>Default speed</span>
+            <span>{t("default_speed")}</span>
             <span className="select-wrap">
               <select value={rate ?? ""} disabled={saving} onChange={(event) => void changeRate(event.target.value)}>
-                <option value="">Not set</option>
+                <option value="">{t("not_set")}</option>
                 {rateOptions.map((option) => <option key={option} value={option}>{option}×</option>)}
               </select>
             </span>
           </label>
-          <p className="note">Changes apply to this video now and to future videos from this creator.</p>
+          <p className="note">{t("creator_change_note")}</p>
         </section>
       ) : (
         <section className="state-card">
-          <p className="state-kicker">No creator detected</p>
-          <h1>Open a YouTube or Bilibili video.</h1>
-          <p>The popup will recognize the channel automatically.</p>
+          <p className="state-kicker">{t("no_creator_detected")}</p>
+          <h1>{t("open_supported_video")}</h1>
+          <p>{t("popup_recognition_hint")}</p>
         </section>
       )}
 
       <section className="shortcut-summary" aria-labelledby="shortcut-summary-title">
         <div className="shortcut-heading">
-          <h2 id="shortcut-summary-title">Shortcuts</h2>
-          <span>Key / speed</span>
+          <h2 id="shortcut-summary-title">{t("shortcuts_title")}</h2>
+          <span>{t("key_speed_label")}</span>
         </div>
         <div className="shortcut-grid">
           {shortcuts.map(([key, shortcutRate]) => (
-            <div className="shortcut-item" key={key} aria-label={`${shortcutLabel(key)} sets speed to ${shortcutRate} times`}>
+            <div className="shortcut-item" key={key} aria-label={t("shortcut_speed_aria", [shortcutLabel(key), String(shortcutRate)])}>
               <kbd>{shortcutLabel(key)}</kbd>
               <span>{shortcutRate}×</span>
             </div>
@@ -149,10 +150,11 @@ function Popup(): React.JSX.Element {
         void chrome.runtime.openOptionsPage();
         window.close();
       }}>
-        <span>All settings</span><span aria-hidden="true">↗</span>
+        <span>{t("all_settings")}</span><span aria-hidden="true">↗</span>
       </button>
     </main>
   );
 }
 
+localizeDocument();
 createRoot(document.getElementById("root")!).render(<Popup />);

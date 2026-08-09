@@ -1,0 +1,73 @@
+{
+  "extension_name": { "message": "Universal Video Speed" },
+  "extension_description": { "message": "为 YouTube 和哔哩哔哩提供键盘播放速度快捷键。" },
+  "playback_title": {
+    "message": "Universal Video Speed · $RATE$×",
+    "placeholders": { "rate": { "content": "$1" } }
+  },
+  "space_key": { "message": "空格" },
+  "settings_title": { "message": "设置" },
+  "settings_lede": { "message": "将按键映射到播放速度，并为常看的创作者设置默认速度。" },
+  "playback_settings": { "message": "播放设置" },
+  "shortcuts_title": { "message": "快捷键" },
+  "shortcuts_hint": { "message": "未输入文字时生效。" },
+  "key_label": { "message": "按键" },
+  "speed_label": { "message": "速度" },
+  "shortcut_key": { "message": "快捷键按键" },
+  "press_key": { "message": "请按键" },
+  "playback_speed": { "message": "播放速度" },
+  "empty_value": { "message": "空白" },
+  "remove_shortcut": {
+    "message": "移除快捷键 $KEY$",
+    "placeholders": { "key": { "content": "$1" } }
+  },
+  "add_shortcut": { "message": "+ 添加快捷键" },
+  "creator_defaults_title": { "message": "创作者默认速度" },
+  "creator_defaults_hint": { "message": "创作者的视频加载时自动应用。通过弹出窗口设置最方便。" },
+  "no_creator_defaults": { "message": "尚未设置创作者默认速度" },
+  "no_creator_defaults_body": { "message": "打开 YouTube 或哔哩哔哩视频后，在扩展弹出窗口中设置默认速度，也可以在这里手动添加。" },
+  "platform_label": { "message": "平台" },
+  "creator_label": { "message": "创作者" },
+  "creator_input_label": { "message": "频道或创作者网址/ID" },
+  "youtube_creator_placeholder": { "message": "网址、@用户名或频道 ID" },
+  "bilibili_creator_placeholder": { "message": "空间网址或 UID" },
+  "looking_up_creator": { "message": "正在查找创作者" },
+  "looking_up_creator_ellipsis": { "message": "正在查找创作者…" },
+  "loading": { "message": "加载中" },
+  "creator_lookup_failed": { "message": "无法加载昵称，但仍可保存此创作者。" },
+  "default_playback_speed": { "message": "默认播放速度" },
+  "remove_creator": {
+    "message": "移除创作者 $CREATOR$",
+    "placeholders": { "creator": { "content": "$1" } }
+  },
+  "add_creator": { "message": "+ 添加创作者" },
+  "saved_synced": { "message": "已保存，并同步到 Chrome。" },
+  "saved": { "message": "已保存" },
+  "save_changes": { "message": "保存更改" },
+  "error_shortcut_required": { "message": "请至少添加一个快捷键。" },
+  "error_shortcut_missing": { "message": "请为每一行选择快捷键。" },
+  "error_shortcut_duplicate": { "message": "每个快捷键只能使用一次。" },
+  "error_speed_range": { "message": "速度必须在 0.25× 到 16× 之间。" },
+  "error_creator_invalid": { "message": "请输入 YouTube 频道网址、@用户名、频道 ID，或哔哩哔哩空间网址/UID。" },
+  "error_creator_duplicate": { "message": "每位创作者只能设置一个默认速度。" },
+  "error_creator_speed_range": { "message": "创作者默认速度必须在 0.25× 到 16× 之间。" },
+  "detecting_creator": { "message": "正在识别创作者…" },
+  "youtube_channel": { "message": "YouTube 频道" },
+  "bilibili_creator": { "message": "哔哩哔哩创作者" },
+  "saving": { "message": "保存中" },
+  "default_speed": { "message": "默认速度" },
+  "not_set": { "message": "未设置" },
+  "creator_change_note": { "message": "更改会立即应用到当前视频，以及该创作者今后的视频。" },
+  "no_creator_detected": { "message": "未识别到创作者" },
+  "open_supported_video": { "message": "请打开 YouTube 或哔哩哔哩视频。" },
+  "popup_recognition_hint": { "message": "弹出窗口会自动识别频道。" },
+  "key_speed_label": { "message": "按键 / 速度" },
+  "shortcut_speed_aria": {
+    "message": "按 $KEY$ 将速度设为 $RATE$ 倍",
+    "placeholders": {
+      "key": { "content": "$1" },
+      "rate": { "content": "$2" }
+    }
+  },
+  "all_settings": { "message": "全部设置" }
+}

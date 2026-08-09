@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { normalizeCreatorInput } from "../creator-defaults";
 import { resolveCreatorMetadata } from "../creator-metadata";
+import { localizeDocument, t } from "../i18n";
 import { DEFAULT_SETTINGS, isSupportedShortcutKey, normalizeSettings, type CreatorSite, type CreatorSpeedRule, type ShortcutMapping } from "../settings";
 import "./options.css";
 
@@ -32,7 +33,7 @@ function rulesToRows(rules: CreatorSpeedRule[]): CreatorRow[] {
 }
 
 function shortcutLabel(key: string): string {
-  if (key === " ") return "Space";
+  if (key === " ") return t("space_key");
   return key.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
@@ -87,22 +88,22 @@ function Options(): React.JSX.Element {
 
   const error = useMemo(() => {
     const keys = rows.map((row) => row.key);
-    if (rows.length === 0) return "Add at least one shortcut.";
-    if (rows.some((row) => !isSupportedShortcutKey(row.key))) return "Choose a shortcut for every row.";
-    if (new Set(keys).size !== keys.length) return "Each shortcut can only be used once.";
+    if (rows.length === 0) return t("error_shortcut_required");
+    if (rows.some((row) => !isSupportedShortcutKey(row.key))) return t("error_shortcut_missing");
+    if (new Set(keys).size !== keys.length) return t("error_shortcut_duplicate");
     if (rows.some((row) => !Number.isFinite(Number(row.rate)) || Number(row.rate) < 0.25 || Number(row.rate) > 16)) {
-      return "Speed must be between 0.25× and 16×.";
+      return t("error_speed_range");
     }
     return "";
   }, [rows]);
 
   const creatorError = useMemo(() => {
     const normalizedIds = creatorRows.map((row) => normalizeCreatorInput(row.site, row.creator));
-    if (normalizedIds.some((id) => !id)) return "Use a YouTube channel URL, @handle, channel ID, or a Bilibili space URL/UID.";
+    if (normalizedIds.some((id) => !id)) return t("error_creator_invalid");
     const keys = creatorRows.map((row, index) => `${row.site}:${normalizedIds[index]}`);
-    if (new Set(keys).size !== keys.length) return "Each creator can only have one default speed.";
+    if (new Set(keys).size !== keys.length) return t("error_creator_duplicate");
     if (creatorRows.some((row) => !Number.isFinite(Number(row.rate)) || Number(row.rate) < 0.25 || Number(row.rate) > 16)) {
-      return "Creator speed must be between 0.25× and 16×.";
+      return t("error_creator_speed_range");
     }
     return "";
   }, [creatorRows]);
@@ -139,34 +140,34 @@ function Options(): React.JSX.Element {
       <header className="hero" aria-labelledby="page-title">
         <div className="mark" aria-hidden="true">UV</div>
         <div className="hero-copy">
-          <p className="eyebrow">Universal Video Speed</p>
-          <h1 id="page-title">Settings</h1>
-          <p className="lede">Map keys to speeds, and pin defaults for creators you watch often.</p>
+          <p className="eyebrow">{t("extension_name")}</p>
+          <h1 id="page-title">{t("settings_title")}</h1>
+          <p className="lede">{t("settings_lede")}</p>
         </div>
       </header>
 
-      <div className="settings" aria-label="Playback settings">
+      <div className="settings" aria-label={t("playback_settings")}>
         <section className="panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
-            <h2 id="shortcuts-title">Shortcuts</h2>
-            <p className="hint">Works when you’re not typing.</p>
+            <h2 id="shortcuts-title">{t("shortcuts_title")}</h2>
+            <p className="hint">{t("shortcuts_hint")}</p>
           </div>
 
           <div className="map-list" aria-busy={!loaded}>
             <div className="map-list-header" aria-hidden="true">
-              <span>Key</span>
+              <span>{t("key_label")}</span>
               <span />
-              <span>Speed</span>
+              <span>{t("speed_label")}</span>
               <span />
             </div>
             {rows.map((row) => (
               <div className="map-row" key={row.id}>
                 <label className="key-field">
-                  <span className="sr-only">Shortcut key</span>
+                  <span className="sr-only">{t("shortcut_key")}</span>
                   <input
                     className="key-input"
                     value={shortcutLabel(row.key)}
-                    placeholder="Press key"
+                    placeholder={t("press_key")}
                     readOnly
                     onKeyDown={(event) => {
                       if (!isSupportedShortcutKey(event.key)) return;
@@ -178,7 +179,7 @@ function Options(): React.JSX.Element {
                 </label>
                 <span className="map-arrow" aria-hidden="true">→</span>
                 <label className="rate-field">
-                  <span className="sr-only">Playback speed</span>
+                  <span className="sr-only">{t("playback_speed")}</span>
                   <input
                     type="number"
                     min="0.25"
@@ -191,7 +192,7 @@ function Options(): React.JSX.Element {
                 <button
                   className="remove"
                   type="button"
-                  aria-label={`Remove shortcut ${row.key || "empty"}`}
+                  aria-label={t("remove_shortcut", row.key || t("empty_value"))}
                   onClick={() => {
                     setStatus("idle");
                     setRows((current) => current.filter(({ id }) => id !== row.id));
@@ -211,35 +212,35 @@ function Options(): React.JSX.Element {
               setRows((current) => [...current, { id: crypto.randomUUID(), key: "", rate: "1" }]);
             }}
           >
-            + Add shortcut
+            {t("add_shortcut")}
           </button>
         </section>
 
         <section className="panel" aria-labelledby="creators-title">
           <div className="panel-head">
-            <h2 id="creators-title">Creator defaults</h2>
-            <p className="hint">Applied when a creator’s video loads. Easiest via popup.</p>
+            <h2 id="creators-title">{t("creator_defaults_title")}</h2>
+            <p className="hint">{t("creator_defaults_hint")}</p>
           </div>
 
           {creatorRows.length === 0 ? (
             <div className="empty" aria-busy={!loaded}>
-              <p className="empty-title">No creator defaults yet</p>
+              <p className="empty-title">{t("no_creator_defaults")}</p>
               <p className="empty-body">
-                On a YouTube or Bilibili video, open the extension popup and set a default — or add one manually.
+                {t("no_creator_defaults_body")}
               </p>
             </div>
           ) : (
             <div className="map-list creator-list" aria-busy={!loaded}>
               <div className="map-list-header creator-header" aria-hidden="true">
-                <span>Platform</span>
-                <span>Creator</span>
-                <span>Speed</span>
+                <span>{t("platform_label")}</span>
+                <span>{t("creator_label")}</span>
+                <span>{t("speed_label")}</span>
                 <span />
               </div>
               {creatorRows.map((row) => (
                 <div className="creator-row" key={row.id}>
                   <label className="site-field">
-                    <span className="sr-only">Platform</span>
+                    <span className="sr-only">{t("platform_label")}</span>
                     <select
                       value={row.site}
                       onChange={(event) =>
@@ -256,13 +257,13 @@ function Options(): React.JSX.Element {
                     </select>
                   </label>
                   <div className="creator-identity">
-                    <label className="sr-only" htmlFor={`creator-${row.id}`}>Channel or creator URL/ID</label>
+                    <label className="sr-only" htmlFor={`creator-${row.id}`}>{t("creator_input_label")}</label>
                     <div className="creator-input-row">
                       <input
                         id={`creator-${row.id}`}
                         className="creator-input"
                         value={row.creator}
-                        placeholder={row.site === "youtube" ? "URL, @handle, or channel ID" : "Space URL or UID"}
+                        placeholder={row.site === "youtube" ? t("youtube_creator_placeholder") : t("bilibili_creator_placeholder")}
                         onChange={(event) => updateCreatorRow(row.id, {
                           creator: event.target.value,
                           creatorName: "",
@@ -270,19 +271,19 @@ function Options(): React.JSX.Element {
                         })}
                       />
                       {row.resolution === "resolving" ? (
-                        <button className="creator-loading" type="button" disabled aria-label="Looking up creator">
+                        <button className="creator-loading" type="button" disabled aria-label={t("looking_up_creator")}>
                           <span className="creator-spinner" aria-hidden="true" />
-                          Loading
+                          {t("loading")}
                         </button>
                       ) : null}
                     </div>
                     {row.creatorName ? <span className="creator-name">{row.creatorName}</span> : null}
                     {row.resolution === "error" ? (
-                      <span className="creator-name creator-name-error">Couldn’t load nickname. You can still save this creator.</span>
+                      <span className="creator-name creator-name-error">{t("creator_lookup_failed")}</span>
                     ) : null}
                   </div>
                   <label className="rate-field">
-                    <span className="sr-only">Default playback speed</span>
+                    <span className="sr-only">{t("default_playback_speed")}</span>
                     <input
                       type="number"
                       min="0.25"
@@ -295,7 +296,7 @@ function Options(): React.JSX.Element {
                   <button
                     className="remove"
                     type="button"
-                    aria-label={`Remove creator ${row.creatorName || row.creator || "empty"}`}
+                    aria-label={t("remove_creator", row.creatorName || row.creator || t("empty_value"))}
                     onClick={() => {
                       setStatus("idle");
                       setCreatorRows((current) => current.filter(({ id }) => id !== row.id));
@@ -319,21 +320,22 @@ function Options(): React.JSX.Element {
               ]);
             }}
           >
-            + Add creator
+            {t("add_creator")}
           </button>
         </section>
       </div>
 
       <footer className="footer">
         <p className={error || creatorError ? "message error" : "message"} role="status">
-          {error || creatorError || (resolvingCreators ? "Looking up creator…" : status === "saved" ? "Saved — synced across Chrome." : "")}
+          {error || creatorError || (resolvingCreators ? t("looking_up_creator_ellipsis") : status === "saved" ? t("saved_synced") : "")}
         </p>
         <button className="save" type="button" disabled={Boolean(error || creatorError) || resolvingCreators || !loaded} onClick={() => void save()}>
-          {status === "saved" ? "Saved" : "Save changes"}
+          {status === "saved" ? t("saved") : t("save_changes")}
         </button>
       </footer>
     </main>
   );
 }
 
+localizeDocument();
 createRoot(document.getElementById("root")!).render(<Options />);
