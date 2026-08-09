@@ -10,64 +10,7 @@ import {
   type PlaybackBadgeMessage
 } from "./playback-badge";
 
-const LOG_PREFIX = "[Universal Video Speed]";
 let settings: Settings = DEFAULT_SETTINGS;
-const handledKeyboardEvents = new WeakSet<KeyboardEvent>();
-
-function frameLabel(): "top" | "iframe" {
-  return window === window.top ? "top" : "iframe";
-}
-
-function videoState(video: HTMLVideoElement): Record<string, number | boolean> {
-  const rect = video.getBoundingClientRect();
-  return {
-    playbackRate: video.playbackRate,
-    defaultPlaybackRate: video.defaultPlaybackRate,
-    paused: video.paused,
-    ended: video.ended,
-    readyState: video.readyState,
-    connected: video.isConnected,
-    width: Math.round(rect.width),
-    height: Math.round(rect.height)
-  };
-}
-
-function applyPlaybackRate(video: HTMLVideoElement, rate: number, source: "keyboard" | "keyboard-relay" | "popup"): void {
-  console.info(`${LOG_PREFIX} applying playback rate`, {
-    requestedRate: rate,
-    source,
-    before: videoState(video),
-    videosInFrame: document.querySelectorAll("video").length,
-    frame: frameLabel()
-  });
-
-  try {
-    setVideoPlaybackRate(video, rate);
-    showRateHud(video, rate);
-  } catch (error) {
-    console.error(`${LOG_PREFIX} failed to set playback rate`, error);
-    return;
-  }
-
-  for (const delay of [0, 250, 1_000]) {
-    window.setTimeout(() => {
-      const state = videoState(video);
-      const method = state.playbackRate === rate && state.defaultPlaybackRate === rate ? "info" : "warn";
-      console[method](`${LOG_PREFIX} playback rate check`, {
-        requestedRate: rate,
-        source,
-        delayMs: delay,
-        ...state,
-        frame: frameLabel()
-      });
-    }, delay);
-  }
-}
-
-console.info(`${LOG_PREFIX} content script loaded`, {
-  origin: location.origin,
-  frame: frameLabel()
-});
 
 function reportPlaybackBadge(reset = false, forceStopped = false): void {
   const video = forceStopped ? null : findPrimaryVideo();
@@ -82,24 +25,12 @@ function reportPlaybackBadge(reset = false, forceStopped = false): void {
 
 void chrome.storage.sync.get("settings").then(({ settings: saved }) => {
   settings = normalizeSettings(saved);
-  console.info(`${LOG_PREFIX} settings loaded`, {
-    shortcuts: JSON.stringify(settings.shortcuts),
-    disabledForHost: isHostDisabled(location.hostname, settings.disabledHosts),
-    frame: frameLabel()
-  });
   scheduleCreatorDefault();
-}).catch((error: unknown) => {
-  console.error(`${LOG_PREFIX} failed to load settings; using defaults`, error);
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync" && changes.settings) {
     settings = normalizeSettings(changes.settings.newValue);
-    console.info(`${LOG_PREFIX} settings updated`, {
-      shortcuts: JSON.stringify(settings.shortcuts),
-      disabledForHost: isHostDisabled(location.hostname, settings.disabledHosts),
-      frame: frameLabel()
-    });
     scheduleCreatorDefault();
   }
 });
@@ -154,82 +85,45 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
   const video = findPrimaryVideo();
   if (!video) return;
 
-  console.info(`${LOG_PREFIX} cross-frame shortcut received`, {
-    rate: message.rate,
-    source: message.source,
-    frame: frameLabel()
-  });
-  applyPlaybackRate(video, message.rate, message.source);
+  setVideoPlaybackRate(video, message.rate);
+  showRateHud(video, message.rate);
 });
 
 function onKeyDown(event: KeyboardEvent): void {
-  if (handledKeyboardEvents.has(event)) return;
-  handledKeyboardEvents.add(event);
-
-  const digitFromCode = !event.shiftKey ? event.code.match(/^Digit([0-9])$/)?.[1] : undefined;
-  const rate = settings.shortcuts[event.key] ?? (digitFromCode ? settings.shortcuts[digitFromCode] : undefined);
-  console.info(`${LOG_PREFIX} keydown observed`, {
-    key: event.key,
-    code: event.code,
-    mappedRate: rate ?? null,
-    target: event.target instanceof Element ? event.target.tagName.toLowerCase() : "unknown",
-    frame: frameLabel()
-  });
-  if (rate === undefined) return;
-
-  const ignoredReason = event.repeat ? "repeated key"
-    : event.isComposing ? "IME composition"
-    : event.metaKey || event.ctrlKey || event.altKey ? "modifier key held"
-    : isEditableTarget(event) ? "editable element focused"
-    : isHostDisabled(location.hostname, settings.disabledHosts) ? "host disabled"
-    : null;
-  if (ignoredReason) {
-    console.info(`${LOG_PREFIX} shortcut ignored`, {
-      key: event.key,
-      rate,
-      reason: ignoredReason,
-      frame: frameLabel()
-    });
+  if (
+    event.repeat ||
+    event.isComposing ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.altKey ||
+    isEditableTarget(event) ||
+    isHostDisabled(location.hostname, settings.disabledHosts)
+  ) {
     return;
   }
 
-  console.info(`${LOG_PREFIX} shortcut captured`, {
-    key: event.key,
-    rate,
-    frame: frameLabel()
-  });
+  const rate = settings.shortcuts[event.key];
+  if (rate === undefined) return;
 
   event.preventDefault();
   event.stopImmediatePropagation();
 
   const video = findPrimaryVideo();
   if (!video) {
-    console.warn(`${LOG_PREFIX} no video found in the focused frame`, {
-      videosInFrame: document.querySelectorAll("video").length,
-      frame: frameLabel()
-    });
     void chrome.runtime.sendMessage({
       type: PLAYBACK_RATE_COMMAND_MESSAGE,
-      rate,
-      source: "keyboard-relay"
-    }).then(() => {
-      console.info(`${LOG_PREFIX} cross-frame shortcut requested`, {
-        rate,
-        frame: frameLabel()
-      });
-    }).catch((error: unknown) => {
-      console.error(`${LOG_PREFIX} failed to request cross-frame shortcut`, error);
-    });
+      rate
+    }).catch(() => undefined);
     return;
   }
 
-  applyPlaybackRate(video, rate, "keyboard");
+  setVideoPlaybackRate(video, rate);
+  showRateHud(video, rate);
 }
 
 installVideoActivityTracking();
 installPlaybackRateProtection();
 window.addEventListener("keydown", onKeyDown, true);
-document.addEventListener("keydown", onKeyDown, true);
 document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
 document.addEventListener("play", scheduleCreatorDefault, true);
 for (const eventName of ["play", "playing", "pause", "ended", "ratechange", "loadedmetadata"] as const) {

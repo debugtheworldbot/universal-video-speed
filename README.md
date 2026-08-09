@@ -26,13 +26,7 @@ Shortcuts are injected on regular web pages and into embedded player frames. If 
 
 Browser-internal pages, browser extension stores, and other protected pages do not allow extensions to inject scripts. Some sites may also use a non-standard player or actively restrict playback rates, so universal coverage is best effort.
 
-### Troubleshooting
-
-Open the affected page's DevTools, select **Console**, and filter for `[Universal Video Speed]`. The extension logs whether its content script and settings loaded, the raw key and code observed by both window- and document-level capture listeners, why a configured shortcut was ignored, how many videos were found in the focused frame, and whether the requested playback rate remained applied after 0, 250, and 1,000 milliseconds.
-
 You can replace the defaults with any single non-modifier key from the extension's settings page.
-
-The shortcut cards in the extension popup are also clickable and apply their displayed speed directly to the active tab.
 
 Vimium and similar keyboard-navigation extensions can intercept single-key shortcuts before they reach the page. The settings page shows a compatible **Excluded URLs and keys** rule using the currently configured shortcut keys.
 

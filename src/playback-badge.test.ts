@@ -35,11 +35,9 @@ describe("playback badge", () => {
   });
 
   it("accepts only supported cross-frame playback-rate commands", () => {
-    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 2.3, source: "popup" })).toBe(true);
-    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 2, source: "keyboard-relay" })).toBe(true);
-    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 0, source: "popup" })).toBe(false);
-    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 17, source: "popup" })).toBe(false);
-    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 2, source: "page" })).toBe(false);
-    expect(isPlaybackRateCommandMessage({ type: "other", rate: 2, source: "popup" })).toBe(false);
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 2.3 })).toBe(true);
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 0 })).toBe(false);
+    expect(isPlaybackRateCommandMessage({ type: PLAYBACK_RATE_COMMAND_MESSAGE, rate: 17 })).toBe(false);
+    expect(isPlaybackRateCommandMessage({ type: "other", rate: 2 })).toBe(false);
   });
 });
