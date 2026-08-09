@@ -107,7 +107,6 @@ h2 {
   font: 500 9px/1 "SFMono-Regular", Consolas, monospace;
   letter-spacing: .08em;
   text-transform: uppercase;
-  border-bottom: 1px solid var(--line);
 }
 .map-row {
   display: grid;
@@ -258,6 +257,7 @@ input::-webkit-inner-spin-button { appearance: none; }
   white-space: nowrap;
   padding-left: 1px;
 }
+.creator-name-error { color: #a42d1f; }
 .creator-row .rate-field {
   width: 100%;
 }
