@@ -354,6 +354,80 @@ input::-webkit-inner-spin-button { appearance: none; }
   text-underline-offset: 4px;
 }
 
+/* —— Keyboard-extension compatibility note —— */
+.shortcut-conflict {
+  position: relative;
+  margin-top: 22px;
+  padding: 14px 14px 14px 46px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--signal);
+}
+.conflict-mark {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--signal);
+  font: 700 12px/1 "SFMono-Regular", Consolas, monospace;
+}
+.conflict-kicker {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font: 600 8px/1 "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.shortcut-conflict h3 {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+.shortcut-conflict .conflict-copy > p:not(.conflict-kicker) {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.conflict-rule {
+  margin: 11px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+}
+.conflict-rule > div {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+.conflict-rule dt {
+  color: var(--muted);
+  font: 500 8px/1 "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.conflict-rule dd {
+  min-width: 0;
+  margin: 0;
+}
+.conflict-rule code {
+  display: block;
+  overflow: hidden;
+  color: var(--ink);
+  font: 600 10px/1.3 "SFMono-Regular", Consolas, monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+}
+
 .footer {
   margin-top: 20px;
   padding-top: 14px;

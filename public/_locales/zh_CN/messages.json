@@ -22,6 +22,11 @@
     "placeholders": { "key": { "content": "$1" } }
   },
   "add_shortcut": { "message": "+ 添加快捷键" },
+  "shortcut_conflict_kicker": { "message": "Vim 类扩展兼容" },
+  "shortcut_conflict_title": { "message": "单键可能被其他扩展拦截" },
+  "shortcut_conflict_body": { "message": "如果你使用 Vimium 或其他键盘导航扩展，请在其 Excluded URLs and keys 中添加以下规则，让这些快捷键交给视频页面。" },
+  "vimium_pattern_label": { "message": "匹配" },
+  "vimium_keys_label": { "message": "按键" },
   "creator_defaults_title": { "message": "频道指定速度" },
   "creator_defaults_hint": { "message": "设定频道的视频加载时自动应用。通过点击右上角的图标设置最方便。" },
   "no_creator_defaults": { "message": "尚未设置创作者默认速度" },

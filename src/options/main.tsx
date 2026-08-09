@@ -214,6 +214,25 @@ function Options(): React.JSX.Element {
           >
             {t("add_shortcut")}
           </button>
+
+          <aside className="shortcut-conflict" aria-labelledby="shortcut-conflict-title">
+            <span className="conflict-mark" aria-hidden="true">!</span>
+            <div className="conflict-copy">
+              <p className="conflict-kicker">{t("shortcut_conflict_kicker")}</p>
+              <h3 id="shortcut-conflict-title">{t("shortcut_conflict_title")}</h3>
+              <p>{t("shortcut_conflict_body")}</p>
+              <dl className="conflict-rule">
+                <div>
+                  <dt>{t("vimium_pattern_label")}</dt>
+                  <dd><code>https?://*/*</code></dd>
+                </div>
+                <div>
+                  <dt>{t("vimium_keys_label")}</dt>
+                  <dd><code>{rows.map(({ key }) => shortcutLabel(key)).filter(Boolean).join(" ") || "—"}</code></dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
         </section>
 
         <section className="panel" aria-labelledby="creators-title">

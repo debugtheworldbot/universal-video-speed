@@ -22,6 +22,11 @@
     "placeholders": { "key": { "content": "$1" } }
   },
   "add_shortcut": { "message": "+ Add shortcut" },
+  "shortcut_conflict_kicker": { "message": "Vim-style extensions" },
+  "shortcut_conflict_title": { "message": "Single keys may be intercepted" },
+  "shortcut_conflict_body": { "message": "If you use Vimium or another keyboard-navigation extension, add this rule under Excluded URLs and keys so these shortcuts reach the video." },
+  "vimium_pattern_label": { "message": "Pattern" },
+  "vimium_keys_label": { "message": "Keys" },
   "creator_defaults_title": { "message": "Channel-specific speeds" },
   "creator_defaults_hint": { "message": "Applied when a channel’s video loads. Easiest to set from the icon in the top-right corner." },
   "no_creator_defaults": { "message": "No creator defaults yet" },
