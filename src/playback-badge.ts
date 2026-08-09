@@ -17,3 +17,9 @@ export function isPlaybackBadgeMessage(message: unknown): message is PlaybackBad
 export function formatPlaybackBadgeRate(rate: number): string {
   return String(Number(rate.toFixed(2)));
 }
+
+export function formatPlaybackBadgeText(rate: number): string {
+  const text = formatPlaybackBadgeRate(rate);
+  // Chrome renders single-glyph action badges slightly left of their optical center.
+  return text.length === 1 ? `\u2009${text}` : text;
+}

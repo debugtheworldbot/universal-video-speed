@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatPlaybackBadgeRate, isPlaybackBadgeMessage, PLAYBACK_BADGE_MESSAGE } from "./playback-badge";
+import {
+  formatPlaybackBadgeRate,
+  formatPlaybackBadgeText,
+  isPlaybackBadgeMessage,
+  PLAYBACK_BADGE_MESSAGE
+} from "./playback-badge";
 
 describe("playback badge", () => {
   it.each([
@@ -9,6 +14,12 @@ describe("playback badge", () => {
     [1.333, "1.33"]
   ])("formats %s compactly", (rate, expected) => {
     expect(formatPlaybackBadgeRate(rate)).toBe(expected);
+  });
+
+  it("optically centers single-character badge text", () => {
+    expect(formatPlaybackBadgeText(3)).toBe("\u20093");
+    expect(formatPlaybackBadgeText(1.5)).toBe("1.5");
+    expect(formatPlaybackBadgeText(0.75)).toBe("0.75");
   });
 
   it("accepts playing and stopped state messages", () => {

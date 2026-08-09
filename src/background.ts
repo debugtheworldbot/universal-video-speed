@@ -1,4 +1,4 @@
-import { formatPlaybackBadgeRate, isPlaybackBadgeMessage } from "./playback-badge";
+import { formatPlaybackBadgeRate, formatPlaybackBadgeText, isPlaybackBadgeMessage } from "./playback-badge";
 
 interface FramePlaybackState {
   playing: boolean;
@@ -15,15 +15,16 @@ async function renderBadge(tabId: number): Promise<void> {
         .filter((state): state is FramePlaybackState & { rate: number } => state.playing && state.rate !== undefined)
         .sort((a, b) => b.updatedAt - a.updatedAt)[0]
     : undefined;
-  const text = activeState ? formatPlaybackBadgeRate(activeState.rate) : "";
+  const rateText = activeState ? formatPlaybackBadgeRate(activeState.rate) : "";
+  const badgeText = activeState ? formatPlaybackBadgeText(activeState.rate) : "";
 
   await Promise.all([
-    chrome.action.setBadgeText({ tabId, text }),
+    chrome.action.setBadgeText({ tabId, text: badgeText }),
     chrome.action.setBadgeBackgroundColor({ tabId, color: "#171719" }),
     chrome.action.setBadgeTextColor({ tabId, color: "#FFFFFF" }),
     chrome.action.setTitle({
       tabId,
-      title: activeState ? `Universal Video Speed · ${text}×` : "Universal Video Speed"
+      title: activeState ? `Universal Video Speed · ${rateText}×` : "Universal Video Speed"
     })
   ]);
 }
