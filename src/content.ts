@@ -5,6 +5,7 @@ import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-
 import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
+import { requestYouTubePlayerRate } from "./youtube-player-bridge";
 import {
   isPlaybackRateCommandMessage,
   PLAYBACK_BADGE_MESSAGE,
@@ -13,6 +14,11 @@ import {
 } from "./playback-badge";
 
 let settings: Settings = DEFAULT_SETTINGS;
+
+function setPlaybackRate(video: HTMLVideoElement, rate: number): void {
+  if (creatorSiteForHostname(location.hostname) === "youtube") requestYouTubePlayerRate(rate);
+  setVideoPlaybackRate(video, rate);
+}
 
 function reportPlaybackBadge(reset = false, forceStopped = false): void {
   const video = forceStopped ? null : findPrimaryVideo();
@@ -86,7 +92,7 @@ function applyAutoDefault(): void {
   if (applied?.contextKey === contextKey) {
     if (applied.signature === match.signature || applied.priority > match.priority) return;
   }
-  setVideoPlaybackRate(video, match.rate);
+  setPlaybackRate(video, match.rate);
   appliedDefaults.set(video, { contextKey, priority: match.priority, signature: match.signature });
 }
 
@@ -110,7 +116,7 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
   const video = findPrimaryVideo();
   if (!video) return;
 
-  setVideoPlaybackRate(video, message.rate);
+  setPlaybackRate(video, message.rate);
   markManualOverride(video);
   showRateHud(video, message.rate);
 });
@@ -143,7 +149,7 @@ function onKeyDown(event: KeyboardEvent): void {
     return;
   }
 
-  setVideoPlaybackRate(video, rate);
+  setPlaybackRate(video, rate);
   markManualOverride(video);
   showRateHud(video, rate);
 }
