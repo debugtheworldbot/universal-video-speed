@@ -8,10 +8,19 @@ export interface CreatorSpeedRule {
   rate: number;
 }
 
+export type SiteFallbackRates = Partial<Record<CreatorSite, number>>;
+
+export interface UrlSpeedRule {
+  prefix: string;
+  rate: number;
+}
+
 export interface Settings {
   shortcuts: ShortcutMapping;
   disabledHosts: string[];
   creatorRules: CreatorSpeedRule[];
+  fallbackRates: SiteFallbackRates;
+  urlRules: UrlSpeedRule[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -23,7 +32,9 @@ export const DEFAULT_SETTINGS: Settings = {
     "3": 3
   },
   disabledHosts: [],
-  creatorRules: []
+  creatorRules: [],
+  fallbackRates: {},
+  urlRules: []
 };
 
 const UNSUPPORTED_SHORTCUT_KEYS = new Set(["Alt", "AltGraph", "Control", "Meta", "Shift", "Dead", "Process", "Unidentified"]);
@@ -57,12 +68,46 @@ export function normalizeSettings(value: unknown): Settings {
       rule.rate <= 16
     ))
     : [];
+  const fallbackCandidate = candidate.fallbackRates && typeof candidate.fallbackRates === "object"
+    ? candidate.fallbackRates
+    : {};
+  const fallbackRates: SiteFallbackRates = {};
+  for (const site of ["youtube", "bilibili"] as const) {
+    const rate = fallbackCandidate[site];
+    if (typeof rate === "number" && rate >= 0.25 && rate <= 16) fallbackRates[site] = rate;
+  }
+  const urlRules = Array.isArray(candidate.urlRules)
+    ? candidate.urlRules.filter((rule): rule is UrlSpeedRule => Boolean(
+      rule &&
+      typeof rule === "object" &&
+      typeof rule.prefix === "string" &&
+      normalizeUrlPrefix(rule.prefix) === rule.prefix &&
+      typeof rule.rate === "number" &&
+      rule.rate >= 0.25 &&
+      rule.rate <= 16
+    ))
+    : [];
 
   return {
     shortcuts: Object.keys(shortcuts).length ? shortcuts : DEFAULT_SETTINGS.shortcuts,
     disabledHosts,
-    creatorRules
+    creatorRules,
+    fallbackRates,
+    urlRules
   };
+}
+
+export function normalizeUrlPrefix(input: string): string | null {
+  const value = input.trim();
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    if ((url.protocol !== "https:" && url.protocol !== "http:") || url.username || url.password) return null;
+    url.hash = "";
+    return url.href;
+  } catch {
+    return null;
+  }
 }
 
 export function isHostDisabled(hostname: string, disabledHosts: string[]): boolean {

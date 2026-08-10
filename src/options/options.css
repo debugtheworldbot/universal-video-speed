@@ -72,6 +72,11 @@ h1 {
   align-items: start;
 }
 .panel { min-width: 0; }
+.fallback-panel {
+  grid-column: 1 / -1;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
 .panel-head {
   display: flex;
   justify-content: space-between;
@@ -99,6 +104,82 @@ h2 {
 .creator-hint {
   max-width: none;
   white-space: nowrap;
+}
+
+/* —— Automatic fallback speeds —— */
+.fallback-sites {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fallback-site {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr) 92px 12px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+}
+.platform-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.platform-dot.youtube { background: #ff0033; }
+.platform-dot.bilibili { background: #00aeec; }
+.fallback-site input,
+.url-prefix-input {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 9px;
+  border: 1px solid #bbb9ae;
+  border-radius: 0;
+  outline: none;
+  background: #fffef9;
+}
+.fallback-site input {
+  font: 600 14px/1 "SFMono-Regular", Consolas, monospace;
+  text-align: center;
+}
+.fallback-site input:focus,
+.url-prefix-input:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px var(--signal);
+}
+.url-defaults {
+  margin-top: 16px;
+}
+.url-defaults-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.url-defaults-head h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.url-defaults-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.url-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px 92px 28px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.url-prefix-input {
+  font: 500 12px/1 "SFMono-Regular", Consolas, monospace;
 }
 
 /* —— Shared map list (key → speed) —— */
@@ -520,6 +601,10 @@ input::-webkit-inner-spin-button { appearance: none; }
   .creator-identity { grid-area: creator; }
   .creator-row .rate-field { grid-area: rate; }
   .creator-row .remove { grid-area: remove; justify-self: end; }
+  .fallback-sites { grid-template-columns: 1fr; }
+  .url-defaults-head { display: block; }
+  .url-defaults-head p { margin-top: 4px; }
+  .url-row { grid-template-columns: minmax(0, 1fr) 18px 68px 26px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

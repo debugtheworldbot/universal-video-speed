@@ -12,8 +12,14 @@ export type CreatorContextResponse =
   | { status: "detecting" }
   | { status: "unsupported" };
 
-const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"]);
-const BILIBILI_HOSTS = new Set(["bilibili.com", "www.bilibili.com", "m.bilibili.com"]);
+const YOUTUBE_HOSTS = new Set([
+  "youtube.com",
+  "www.youtube.com",
+  "m.youtube.com",
+  "music.youtube.com",
+  "www.youtube-nocookie.com"
+]);
+const BILIBILI_HOSTS = new Set(["bilibili.com", "www.bilibili.com", "m.bilibili.com", "player.bilibili.com"]);
 
 export function creatorSiteForHostname(hostname: string): CreatorSite | null {
   const host = hostname.toLowerCase();

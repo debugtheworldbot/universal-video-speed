@@ -3,10 +3,11 @@ import { createRoot } from "react-dom/client";
 import { normalizeCreatorInput } from "../creator-defaults";
 import { resolveCreatorMetadata } from "../creator-metadata";
 import { localizeDocument, t } from "../i18n";
-import { DEFAULT_SETTINGS, isSupportedShortcutKey, normalizeSettings, type CreatorSite, type CreatorSpeedRule, type ShortcutMapping } from "../settings";
+import { DEFAULT_SETTINGS, isSupportedShortcutKey, normalizeSettings, normalizeUrlPrefix, type CreatorSite, type CreatorSpeedRule, type ShortcutMapping, type UrlSpeedRule } from "../settings";
 import "./options.css";
 
 type Row = { id: string; key: string; rate: string };
+type UrlRow = { id: string; prefix: string; rate: string };
 type CreatorResolution = "idle" | "resolving" | "resolved" | "error";
 type CreatorRow = {
   id: string;
@@ -32,6 +33,10 @@ function rulesToRows(rules: CreatorSpeedRule[]): CreatorRow[] {
   }));
 }
 
+function urlRulesToRows(rules: UrlSpeedRule[]): UrlRow[] {
+  return rules.map((rule, index) => ({ id: `${rule.prefix}-${index}`, prefix: rule.prefix, rate: String(rule.rate) }));
+}
+
 function shortcutLabel(key: string): string {
   if (key === " ") return t("space_key");
   return key.replace(/([a-z])([A-Z])/g, "$1 $2");
@@ -40,6 +45,8 @@ function shortcutLabel(key: string): string {
 function Options(): React.JSX.Element {
   const [rows, setRows] = useState<Row[]>(mappingToRows(DEFAULT_SETTINGS.shortcuts));
   const [creatorRows, setCreatorRows] = useState<CreatorRow[]>(rulesToRows(DEFAULT_SETTINGS.creatorRules));
+  const [fallbackRates, setFallbackRates] = useState<Record<CreatorSite, string>>({ youtube: "", bilibili: "" });
+  const [urlRows, setUrlRows] = useState<UrlRow[]>(urlRulesToRows(DEFAULT_SETTINGS.urlRules));
   const [status, setStatus] = useState<"idle" | "saved">("idle");
   const [loaded, setLoaded] = useState(false);
 
@@ -48,6 +55,11 @@ function Options(): React.JSX.Element {
       const normalized = normalizeSettings(settings);
       setRows(mappingToRows(normalized.shortcuts));
       setCreatorRows(rulesToRows(normalized.creatorRules));
+      setFallbackRates({
+        youtube: normalized.fallbackRates.youtube === undefined ? "" : String(normalized.fallbackRates.youtube),
+        bilibili: normalized.fallbackRates.bilibili === undefined ? "" : String(normalized.fallbackRates.bilibili)
+      });
+      setUrlRows(urlRulesToRows(normalized.urlRules));
       setLoaded(true);
     });
   }, []);
@@ -107,6 +119,21 @@ function Options(): React.JSX.Element {
     }
     return "";
   }, [creatorRows]);
+  const fallbackError = useMemo(() => {
+    const values = Object.values(fallbackRates).filter((value) => value !== "");
+    return values.some((value) => !Number.isFinite(Number(value)) || Number(value) < 0.25 || Number(value) > 16)
+      ? t("error_fallback_speed_range")
+      : "";
+  }, [fallbackRates]);
+  const urlError = useMemo(() => {
+    const prefixes = urlRows.map((row) => normalizeUrlPrefix(row.prefix));
+    if (prefixes.some((prefix) => !prefix)) return t("error_url_prefix_invalid");
+    if (new Set(prefixes).size !== prefixes.length) return t("error_url_prefix_duplicate");
+    if (urlRows.some((row) => !Number.isFinite(Number(row.rate)) || Number(row.rate) < 0.25 || Number(row.rate) > 16)) {
+      return t("error_url_speed_range");
+    }
+    return "";
+  }, [urlRows]);
   const resolvingCreators = creatorRows.some((row) => row.resolution === "resolving");
 
   function updateRow(id: string, patch: Partial<Row>): void {
@@ -119,8 +146,13 @@ function Options(): React.JSX.Element {
     setCreatorRows((current) => current.map((row) => (row.id === id ? { ...row, ...patch } : row)));
   }
 
+  function updateUrlRow(id: string, patch: Partial<UrlRow>): void {
+    setStatus("idle");
+    setUrlRows((current) => current.map((row) => (row.id === id ? { ...row, ...patch } : row)));
+  }
+
   async function save(): Promise<void> {
-    if (error || creatorError || resolvingCreators) return;
+    if (error || creatorError || fallbackError || urlError || resolvingCreators) return;
     const shortcuts = Object.fromEntries(rows.map((row) => [row.key, Number(row.rate)]));
     const creatorRules: CreatorSpeedRule[] = creatorRows.map((row) => ({
       site: row.site,
@@ -128,9 +160,18 @@ function Options(): React.JSX.Element {
       ...(row.creatorName.trim() ? { creatorName: row.creatorName.trim() } : {}),
       rate: Number(row.rate)
     }));
+    const nextFallbackRates = Object.fromEntries(
+      (Object.entries(fallbackRates) as Array<[CreatorSite, string]>)
+        .filter(([, rate]) => rate !== "")
+        .map(([site, rate]) => [site, Number(rate)])
+    );
+    const urlRules: UrlSpeedRule[] = urlRows.map((row) => ({
+      prefix: normalizeUrlPrefix(row.prefix)!,
+      rate: Number(row.rate)
+    }));
     const { settings } = await chrome.storage.sync.get("settings");
     const current = normalizeSettings(settings);
-    await chrome.storage.sync.set({ settings: { ...current, shortcuts, creatorRules } });
+    await chrome.storage.sync.set({ settings: { ...current, shortcuts, creatorRules, fallbackRates: nextFallbackRates, urlRules } });
     setStatus("saved");
     window.setTimeout(() => setStatus("idle"), 1_800);
   }
@@ -147,6 +188,86 @@ function Options(): React.JSX.Element {
       </header>
 
       <div className="settings" aria-label={t("playback_settings")}>
+        <section className="panel fallback-panel" aria-labelledby="fallback-title">
+          <div className="panel-head">
+            <h2 id="fallback-title">{t("fallback_defaults_title")}</h2>
+            <p className="hint">{t("fallback_defaults_hint")}</p>
+          </div>
+
+          <div className="fallback-sites" aria-busy={!loaded}>
+            {(["youtube", "bilibili"] as const).map((site) => (
+              <label className="fallback-site" key={site}>
+                <span className={`platform-dot ${site}`} aria-hidden="true" />
+                <span>{site === "youtube" ? "YouTube" : "Bilibili"}</span>
+                <input
+                  type="number"
+                  min="0.25"
+                  max="16"
+                  step="0.05"
+                  value={fallbackRates[site]}
+                  placeholder={t("not_set")}
+                  aria-label={t("site_fallback_speed", site === "youtube" ? "YouTube" : "Bilibili")}
+                  onChange={(event) => {
+                    setStatus("idle");
+                    setFallbackRates((current) => ({ ...current, [site]: event.target.value }));
+                  }}
+                />
+                <span aria-hidden="true">×</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="url-defaults">
+            <div className="url-defaults-head">
+              <h3>{t("url_defaults_title")}</h3>
+              <p>{t("url_defaults_hint")}</p>
+            </div>
+            {urlRows.map((row) => (
+              <div className="url-row" key={row.id}>
+                <label>
+                  <span className="sr-only">{t("url_prefix_label")}</span>
+                  <input
+                    className="url-prefix-input"
+                    type="url"
+                    value={row.prefix}
+                    placeholder="https://example.com/videos/"
+                    onChange={(event) => updateUrlRow(row.id, { prefix: event.target.value })}
+                  />
+                </label>
+                <span className="map-arrow" aria-hidden="true">→</span>
+                <label className="rate-field">
+                  <span className="sr-only">{t("default_playback_speed")}</span>
+                  <input
+                    type="number"
+                    min="0.25"
+                    max="16"
+                    step="0.05"
+                    value={row.rate}
+                    onChange={(event) => updateUrlRow(row.id, { rate: event.target.value })}
+                  />
+                </label>
+                <button
+                  className="remove"
+                  type="button"
+                  aria-label={t("remove_url_prefix", row.prefix || t("empty_value"))}
+                  onClick={() => {
+                    setStatus("idle");
+                    setUrlRows((current) => current.filter(({ id }) => id !== row.id));
+                  }}
+                >×</button>
+              </div>
+            ))}
+            <button
+              className="add"
+              type="button"
+              onClick={() => {
+                setStatus("idle");
+                setUrlRows((current) => [...current, { id: crypto.randomUUID(), prefix: "", rate: "1.5" }]);
+              }}
+            >{t("add_url_prefix")}</button>
+          </div>
+        </section>
+
         <section className="panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
             <h2 id="shortcuts-title">{t("shortcuts_title")}</h2>
@@ -345,10 +466,10 @@ function Options(): React.JSX.Element {
       </div>
 
       <footer className="footer">
-        <p className={error || creatorError ? "message error" : "message"} role="status">
-          {error || creatorError || (resolvingCreators ? t("looking_up_creator_ellipsis") : status === "saved" ? t("saved_synced") : "")}
+        <p className={error || creatorError || fallbackError || urlError ? "message error" : "message"} role="status">
+          {error || creatorError || fallbackError || urlError || (resolvingCreators ? t("looking_up_creator_ellipsis") : status === "saved" ? t("saved_synced") : "")}
         </p>
-        <button className="save" type="button" disabled={Boolean(error || creatorError) || resolvingCreators || !loaded} onClick={() => void save()}>
+        <button className="save" type="button" disabled={Boolean(error || creatorError || fallbackError || urlError) || resolvingCreators || !loaded} onClick={() => void save()}>
           {status === "saved" ? t("saved") : t("save_changes")}
         </button>
       </footer>

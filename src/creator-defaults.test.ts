@@ -53,7 +53,9 @@ describe("creator defaults", () => {
 
   it("recognizes only supported video hosts", () => {
     expect(creatorSiteForHostname("www.youtube.com")).toBe("youtube");
+    expect(creatorSiteForHostname("www.youtube-nocookie.com")).toBe("youtube");
     expect(creatorSiteForHostname("www.bilibili.com")).toBe("bilibili");
+    expect(creatorSiteForHostname("player.bilibili.com")).toBe("bilibili");
     expect(creatorSiteForHostname("example.com")).toBeNull();
   });
 

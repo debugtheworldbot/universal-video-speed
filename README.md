@@ -30,9 +30,13 @@ You can replace the defaults with any single non-modifier key from the extension
 
 Vimium and similar keyboard-navigation extensions can intercept single-key shortcuts before they reach the page. The settings page shows a compatible **Excluded URLs and keys** rule using the currently configured shortcut keys.
 
-## Creator defaults
+## Automatic defaults
 
-Keyboard shortcuts work across the web. Creator-specific defaults are available for individual YouTube channels and Bilibili creators. From the settings page, paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. Valid entries are resolved to a stable ID and display their current nickname automatically. The creator speed is applied once when each video loads, so you can still change it afterward.
+You can set independent fallback speeds for YouTube and Bilibili, plus custom rules that match the beginning of a webpage URL. When multiple custom prefixes match, the longest prefix wins.
+
+Creator-specific defaults are also available for individual YouTube channels and Bilibili creators. From the settings page, paste a YouTube channel URL, `@handle`, or channel ID; for Bilibili, paste a space URL or numeric UID. Valid entries are resolved to a stable ID and display their current nickname automatically.
+
+Automatic speeds are applied once per video. The priority is a manual shortcut change, then a creator-specific setting, then a custom webpage prefix, then the platform fallback. This lets you change the speed afterward without the automatic rule taking control again.
 
 On a YouTube or Bilibili video page, open the extension popup to detect the current creator and set or clear their default speed immediately.
 

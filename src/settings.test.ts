@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings } from "./settings";
+import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, normalizeUrlPrefix } from "./settings";
 
 describe("settings", () => {
   it("includes the default 1.75x shortcut", () => {
@@ -33,5 +33,24 @@ describe("settings", () => {
   it("matches exact hosts and their subdomains", () => {
     expect(isHostDisabled("video.example.com", ["example.com"])).toBe(true);
     expect(isHostDisabled("notexample.com", ["example.com"])).toBe(false);
+  });
+
+  it("retains valid fallback and URL-prefix rules", () => {
+    const settings = normalizeSettings({
+      fallbackRates: { youtube: 1.5, bilibili: 20 },
+      urlRules: [
+        { prefix: "https://example.com/path", rate: 2 },
+        { prefix: "javascript:alert(1)", rate: 2 },
+        { prefix: "https://example.com/slow", rate: 20 }
+      ]
+    });
+    expect(settings.fallbackRates).toEqual({ youtube: 1.5 });
+    expect(settings.urlRules).toEqual([{ prefix: "https://example.com/path", rate: 2 }]);
+  });
+
+  it("normalizes safe HTTP URL prefixes", () => {
+    expect(normalizeUrlPrefix(" https://EXAMPLE.com/path#part ")).toBe("https://example.com/path");
+    expect(normalizeUrlPrefix("example.com/path")).toBeNull();
+    expect(normalizeUrlPrefix("https://user:pass@example.com/")).toBeNull();
   });
 });

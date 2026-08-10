@@ -1,7 +1,8 @@
 import { showRateHud } from "./hud";
+import { findAutoSpeed } from "./auto-defaults";
 import { releaseNativeFullscreenControlFocus, releaseVideoControlFocus } from "./fullscreen-focus";
 import { installPlaybackRateProtection, setVideoPlaybackRate } from "./playback-rate";
-import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, findCreatorRule, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
+import { creatorSiteForHostname, detectCreatorContext, detectCreatorIds, isVideoPage, pageVideoKey, type CreatorContextResponse } from "./creator-defaults";
 import { DEFAULT_SETTINGS, isHostDisabled, normalizeSettings, type Settings } from "./settings";
 import { findPrimaryVideo, installVideoActivityTracking } from "./video-target";
 import {
@@ -26,13 +27,14 @@ function reportPlaybackBadge(reset = false, forceStopped = false): void {
 
 void chrome.storage.sync.get("settings").then(({ settings: saved }) => {
   settings = normalizeSettings(saved);
-  scheduleCreatorDefault();
+  scheduleAutoDefault();
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === "sync" && changes.settings) {
     settings = normalizeSettings(changes.settings.newValue);
-    scheduleCreatorDefault();
+    appliedDefaults = new WeakMap();
+    scheduleAutoDefault();
   }
 });
 
@@ -41,29 +43,51 @@ function isEditableTarget(event: KeyboardEvent): boolean {
   return Boolean(target?.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])"));
 }
 
-const appliedDefaults = new WeakMap<HTMLVideoElement, string>();
-let creatorDefaultTimer: number | undefined;
+interface AppliedDefault {
+  contextKey: string;
+  priority: number;
+  signature: string;
+}
 
-function scheduleCreatorDefault(): void {
-  window.clearTimeout(creatorDefaultTimer);
-  creatorDefaultTimer = window.setTimeout(() => {
-    applyCreatorDefault();
+let appliedDefaults = new WeakMap<HTMLVideoElement, AppliedDefault>();
+const manualOverrides = new WeakMap<HTMLVideoElement, string>();
+let autoDefaultTimer: number | undefined;
+
+function scheduleAutoDefault(): void {
+  window.clearTimeout(autoDefaultTimer);
+  autoDefaultTimer = window.setTimeout(() => {
+    applyAutoDefault();
     reportPlaybackBadge();
   }, 100);
 }
 
-function applyCreatorDefault(): void {
+function playbackContextKey(video: HTMLVideoElement): string {
   const site = creatorSiteForHostname(location.hostname);
-  if (!site || !isVideoPage(site) || settings.creatorRules.length === 0 || isHostDisabled(location.hostname, settings.disabledHosts)) return;
+  if (site && isVideoPage(site)) return `${site}:${pageVideoKey(site)}`;
+  return `${location.href}:${video.currentSrc || video.src}`;
+}
 
-  const rule = findCreatorRule(settings.creatorRules, site, detectCreatorIds(site));
-  const video = rule ? findPrimaryVideo() : null;
-  if (!rule || !video || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+function markManualOverride(video: HTMLVideoElement): void {
+  manualOverrides.set(video, playbackContextKey(video));
+}
 
-  const signature = `${site}:${pageVideoKey(site)}:${rule.creatorId}:${rule.rate}`;
-  if (appliedDefaults.get(video) === signature) return;
-  setVideoPlaybackRate(video, rule.rate);
-  appliedDefaults.set(video, signature);
+function applyAutoDefault(): void {
+  if (isHostDisabled(location.hostname, settings.disabledHosts)) return;
+
+  const video = findPrimaryVideo();
+  if (!video || video.readyState < HTMLMediaElement.HAVE_METADATA) return;
+  const site = creatorSiteForHostname(location.hostname);
+  const match = findAutoSpeed(settings, new URL(location.href), site ? detectCreatorIds(site) : []);
+  if (!match) return;
+
+  const contextKey = playbackContextKey(video);
+  if (manualOverrides.get(video) === contextKey) return;
+  const applied = appliedDefaults.get(video);
+  if (applied?.contextKey === contextKey) {
+    if (applied.signature === match.signature || applied.priority > match.priority) return;
+  }
+  setVideoPlaybackRate(video, match.rate);
+  appliedDefaults.set(video, { contextKey, priority: match.priority, signature: match.signature });
 }
 
 if (window === window.top) {
@@ -87,6 +111,7 @@ chrome.runtime.onMessage.addListener((message: unknown) => {
   if (!video) return;
 
   setVideoPlaybackRate(video, message.rate);
+  markManualOverride(video);
   showRateHud(video, message.rate);
 });
 
@@ -119,6 +144,7 @@ function onKeyDown(event: KeyboardEvent): void {
   }
 
   setVideoPlaybackRate(video, rate);
+  markManualOverride(video);
   showRateHud(video, rate);
 }
 
@@ -129,8 +155,8 @@ document.addEventListener("fullscreenchange", releaseNativeFullscreenControlFocu
 document.addEventListener("webkitbeginfullscreen", (event) => {
   if (event.target instanceof HTMLVideoElement) releaseVideoControlFocus(event.target);
 }, true);
-document.addEventListener("loadedmetadata", scheduleCreatorDefault, true);
-document.addEventListener("play", scheduleCreatorDefault, true);
+document.addEventListener("loadedmetadata", scheduleAutoDefault, true);
+document.addEventListener("play", scheduleAutoDefault, true);
 for (const eventName of ["play", "playing", "pause", "ended", "ratechange", "loadedmetadata"] as const) {
   document.addEventListener(eventName, () => reportPlaybackBadge(), true);
 }
@@ -139,8 +165,8 @@ reportPlaybackBadge(window === window.top);
 
 function observeCreatorChanges(): void {
   if (!document.documentElement) return;
-  new MutationObserver(scheduleCreatorDefault).observe(document.documentElement, { childList: true, subtree: true });
-  scheduleCreatorDefault();
+  new MutationObserver(scheduleAutoDefault).observe(document.documentElement, { childList: true, subtree: true });
+  scheduleAutoDefault();
 }
 
 if (document.documentElement) observeCreatorChanges();
