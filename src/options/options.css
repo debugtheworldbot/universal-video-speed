@@ -37,16 +37,10 @@ a { color: inherit; }
   border-bottom: 1px solid var(--ink);
   margin-bottom: 32px;
 }
-.mark {
+.extension-icon {
   width: 42px;
   height: 42px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--signal);
-  font: 600 11px/1 "SFMono-Regular", Consolas, monospace;
-  letter-spacing: .08em;
+  display: block;
 }
 .hero-copy { min-width: 0; }
 .eyebrow {

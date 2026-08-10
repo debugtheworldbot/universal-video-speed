@@ -354,7 +354,7 @@ function Options(): React.JSX.Element {
   return (
     <main className="page">
       <header className="hero" aria-labelledby="page-title">
-        <div className="mark" aria-hidden="true">UV</div>
+        <img className="extension-icon" src="/icons/icon-128.png" alt="" aria-hidden="true" />
         <div className="hero-copy">
           <p className="eyebrow" translate="no">{t("extension_name")}</p>
           <h1 id="page-title">{t("settings_title")}</h1>
