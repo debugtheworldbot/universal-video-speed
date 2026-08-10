@@ -114,7 +114,8 @@ h1 {
 .section-nav a:first-child,
 body:has(#shortcuts:target) .section-nav a[href="#shortcuts"],
 body:has(#automatic:target) .section-nav a[href="#automatic"],
-body:has(#compatibility:target) .section-nav a[href="#compatibility"] {
+body:has(#compatibility:target) .section-nav a[href="#compatibility"],
+body:has(#project:target) .section-nav a[href="#project"] {
   border-left-color: var(--ink);
   background: var(--paper);
   color: var(--ink);
@@ -122,18 +123,21 @@ body:has(#compatibility:target) .section-nav a[href="#compatibility"] {
 .section-nav a:first-child span,
 body:has(#shortcuts:target) .section-nav a[href="#shortcuts"] span,
 body:has(#automatic:target) .section-nav a[href="#automatic"] span,
-body:has(#compatibility:target) .section-nav a[href="#compatibility"] span {
+body:has(#compatibility:target) .section-nav a[href="#compatibility"] span,
+body:has(#project:target) .section-nav a[href="#project"] span {
   background: var(--ink);
   color: var(--signal);
 }
 body:has(#automatic:target) .section-nav a:first-child,
-body:has(#compatibility:target) .section-nav a:first-child {
+body:has(#compatibility:target) .section-nav a:first-child,
+body:has(#project:target) .section-nav a:first-child {
   border-left-color: transparent;
   background: transparent;
   color: var(--muted);
 }
 body:has(#automatic:target) .section-nav a:first-child span,
-body:has(#compatibility:target) .section-nav a:first-child span {
+body:has(#compatibility:target) .section-nav a:first-child span,
+body:has(#project:target) .section-nav a:first-child span {
   background: transparent;
   color: inherit;
 }
@@ -619,6 +623,51 @@ input::-webkit-inner-spin-button { appearance: none; }
 .conflict-rule dd { min-width: 0; margin: 0; }
 .conflict-rule code { display: block; overflow: hidden; font: 650 10px/1.4 "SFMono-Regular", Consolas, monospace; text-overflow: ellipsis; white-space: nowrap; user-select: all; }
 
+/* Project links */
+.project-section { padding-bottom: 0; }
+.project-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.project-links a {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-strong);
+  background: rgba(248, 247, 242, .6);
+  text-decoration: none;
+  transition: border-color 120ms, background-color 120ms, box-shadow 120ms, transform 120ms;
+}
+.project-links a:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--signal);
+  transform: translate(-2px, -2px);
+}
+.project-links strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.25;
+}
+.project-links small {
+  display: block;
+  overflow: hidden;
+  margin-top: 5px;
+  color: var(--muted);
+  font: 500 9px/1.4 "SFMono-Regular", Consolas, monospace;
+  text-overflow: ellipsis;
+}
+.external-arrow {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font: 500 18px/1 "SFMono-Regular", Consolas, monospace;
+}
+.project-links a:hover .external-arrow { color: var(--ink); }
+
 /* Feedback */
 .undo-toast {
   position: fixed;
@@ -702,7 +751,7 @@ input::-webkit-inner-spin-button { appearance: none; }
   .settings-shell { grid-template-columns: 1fr; gap: 30px; }
   .section-nav {
     position: static;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
   .section-nav a,
   .section-nav a + a { padding: 0 12px; }
@@ -716,6 +765,7 @@ input::-webkit-inner-spin-button { appearance: none; }
   .section-nav a + a { padding-left: 12px; }
   .section-nav a:hover { padding-left: 16px; }
   .section-heading { grid-template-columns: 1fr; gap: 10px; align-items: start; }
+  .project-links { grid-template-columns: 1fr; }
   .fallback-sites { grid-template-columns: 1fr; }
   .creator-table th:nth-child(2),
   .creator-table td:nth-child(2) { display: none; }

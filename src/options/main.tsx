@@ -367,6 +367,7 @@ function Options(): React.JSX.Element {
           <a href="#shortcuts"><span>01</span>{t("shortcuts_title")}</a>
           <a href="#automatic"><span>02</span>{t("automatic_speed_title")}</a>
           <a href="#compatibility"><span>03</span>{t("compatibility_title")}</a>
+          <a href="#project"><span>04</span>{t("project_title")}</a>
         </nav>
 
         <div className="settings-content">
@@ -686,6 +687,40 @@ function Options(): React.JSX.Element {
                 </dl>
               </div>
             </details>
+          </section>
+
+          <section className="setting-section project-section" id="project" aria-labelledby="project-title">
+            <div className="section-heading">
+              <div>
+                <p className="section-index" aria-hidden="true">04 / PROJECT</p>
+                <h2 id="project-title">{t("project_title")}</h2>
+              </div>
+              <p>{t("project_hint")}</p>
+            </div>
+            <div className="project-links">
+              <a
+                href="https://github.com/debugtheworldbot/universal-video-speed"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>
+                  <strong>{t("github_repository")}</strong>
+                  <small>debugtheworldbot/universal-video-speed</small>
+                </span>
+                <span className="external-arrow" aria-hidden="true">↗</span>
+              </a>
+              <a
+                href="https://github.com/debugtheworldbot/universal-video-speed/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>
+                  <strong>{t("feedback_title")}</strong>
+                  <small>{t("feedback_hint")}</small>
+                </span>
+                <span className="external-arrow" aria-hidden="true">↗</span>
+              </a>
+            </div>
           </section>
         </div>
       </div>
