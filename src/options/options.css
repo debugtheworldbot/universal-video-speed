@@ -92,6 +92,66 @@ h2 {
   font-weight: 600;
   white-space: nowrap;
 }
+.panel-title-with-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.priority-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+.tooltip-trigger {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: help;
+  font: 700 10px/1 "SFMono-Regular", Consolas, monospace;
+}
+.tooltip-trigger:hover,
+.tooltip-trigger:focus-visible {
+  background: var(--ink);
+  color: var(--signal);
+  outline: none;
+}
+.tooltip-content {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 9px);
+  left: -8px;
+  width: max-content;
+  max-width: min(460px, calc(100vw - 56px));
+  padding: 9px 11px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: white;
+  box-shadow: 3px 3px 0 var(--signal);
+  font: 500 10px/1.5 "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .01em;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition: opacity 120ms, transform 120ms;
+}
+.tooltip-content::before {
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  border: 5px solid transparent;
+  border-bottom-color: var(--ink);
+  content: "";
+}
+.priority-tooltip:hover .tooltip-content,
+.priority-tooltip:focus-within .tooltip-content {
+  opacity: 1;
+  transform: translateY(0);
+}
 .hint {
   margin: 0;
   color: var(--muted);

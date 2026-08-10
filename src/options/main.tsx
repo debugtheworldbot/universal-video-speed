@@ -386,7 +386,20 @@ function Options(): React.JSX.Element {
 
         <section className="panel fallback-panel" aria-labelledby="fallback-title">
           <div className="panel-head">
-            <h2 id="fallback-title">{t("fallback_defaults_title")}</h2>
+            <div className="panel-title-with-tooltip">
+              <h2 id="fallback-title">{t("fallback_defaults_title")}</h2>
+              <span className="priority-tooltip">
+                <button
+                  className="tooltip-trigger"
+                  type="button"
+                  aria-label={t("priority_tooltip_label")}
+                  aria-describedby="fallback-priority-tooltip"
+                >?</button>
+                <span className="tooltip-content" id="fallback-priority-tooltip" role="tooltip">
+                  {t("priority_tooltip_body")}
+                </span>
+              </span>
+            </div>
             <p className="hint fallback-hint">{t("fallback_defaults_hint")}</p>
           </div>
 

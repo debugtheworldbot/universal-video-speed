@@ -28,7 +28,9 @@
   "vimium_pattern_label": { "message": "Pattern" },
   "vimium_keys_label": { "message": "Keys" },
   "fallback_defaults_title": { "message": "Fallback speeds" },
-  "fallback_defaults_hint": { "message": "Applied once per video. Manual changes and channel settings take priority." },
+  "fallback_defaults_hint": { "message": "Applied automatically once per video." },
+  "priority_tooltip_label": { "message": "Show automatic speed priority" },
+  "priority_tooltip_body": { "message": "Priority: manual speed > channel setting > custom webpage prefix > platform fallback." },
   "site_fallback_speed": {
     "message": "$SITE$ fallback speed",
     "placeholders": { "site": { "content": "$1" } }

@@ -28,7 +28,9 @@
   "vimium_pattern_label": { "message": "匹配" },
   "vimium_keys_label": { "message": "按键" },
   "fallback_defaults_title": { "message": "全局 fallback 速度" },
-  "fallback_defaults_hint": { "message": "每个视频仅自动应用一次；手动设定和频道设置优先。" },
+  "fallback_defaults_hint": { "message": "每个视频仅自动应用一次。" },
+  "priority_tooltip_label": { "message": "查看自动速度优先级" },
+  "priority_tooltip_body": { "message": "优先级：用户手动设定 > 频道设置 > 自定义网页前缀 > 平台 fallback。" },
   "site_fallback_speed": {
     "message": "$SITE$ fallback 速度",
     "placeholders": { "site": { "content": "$1" } }
