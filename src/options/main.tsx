@@ -380,51 +380,58 @@ function Options(): React.JSX.Element {
             </div>
 
             <div className="map-list" aria-busy={!loaded}>
-              <div className="map-list-header" aria-hidden="true">
-                <span>{t("key_label")}</span><span /><span>{t("speed_label")}</span><span />
-              </div>
-              {rows.map((row, index) => (
-                <div className="map-row" key={row.id}>
-                  <label className="key-field">
-                    <span className="sr-only">{t("shortcut_key_number", String(index + 1))}</span>
-                    <input
-                      className="key-input"
-                      name={`shortcut-${index}`}
-                      autoComplete="off"
-                      value={shortcutLabel(row.key)}
-                      placeholder={t("press_key")}
-                      readOnly
-                      onKeyDown={(event) => {
-                        if (!isSupportedShortcutKey(event.key)) return;
-                        event.preventDefault();
-                        updateRow(row.id, { key: event.key });
-                        event.currentTarget.blur();
-                      }}
-                    />
-                  </label>
-                  <span className="map-arrow" aria-hidden="true">→</span>
-                  <label className="rate-field">
-                    <span className="sr-only">{t("shortcut_speed_number", String(index + 1))}</span>
-                    <input
-                      type="number"
-                      name={`shortcut-speed-${index}`}
-                      autoComplete="off"
-                      inputMode="decimal"
-                      min="0.25"
-                      max="16"
-                      step="0.05"
-                      value={row.rate}
-                      onChange={(event) => updateRow(row.id, { rate: event.target.value })}
-                    />
-                  </label>
-                  <button
-                    className="icon-action"
-                    type="button"
-                    aria-label={t("remove_shortcut", row.key || t("empty_value"))}
-                    onClick={() => removeShortcut(row.id)}
-                  >×</button>
+              <div className="shortcut-list-header" aria-hidden="true">
+                <div className="shortcut-column-header">
+                  <span>{t("key_label")}</span><span /><span>{t("speed_label")}</span><span />
                 </div>
-              ))}
+                <div className="shortcut-column-header">
+                  <span>{t("key_label")}</span><span /><span>{t("speed_label")}</span><span />
+                </div>
+              </div>
+              <div className="shortcut-grid">
+                {rows.map((row, index) => (
+                  <div className="map-row" key={row.id}>
+                    <label className="key-field">
+                      <span className="sr-only">{t("shortcut_key_number", String(index + 1))}</span>
+                      <input
+                        className="key-input"
+                        name={`shortcut-${index}`}
+                        autoComplete="off"
+                        value={shortcutLabel(row.key)}
+                        placeholder={t("press_key")}
+                        readOnly
+                        onKeyDown={(event) => {
+                          if (!isSupportedShortcutKey(event.key)) return;
+                          event.preventDefault();
+                          updateRow(row.id, { key: event.key });
+                          event.currentTarget.blur();
+                        }}
+                      />
+                    </label>
+                    <span className="map-arrow" aria-hidden="true">→</span>
+                    <label className="rate-field">
+                      <span className="sr-only">{t("shortcut_speed_number", String(index + 1))}</span>
+                      <input
+                        type="number"
+                        name={`shortcut-speed-${index}`}
+                        autoComplete="off"
+                        inputMode="decimal"
+                        min="0.25"
+                        max="16"
+                        step="0.05"
+                        value={row.rate}
+                        onChange={(event) => updateRow(row.id, { rate: event.target.value })}
+                      />
+                    </label>
+                    <button
+                      className="icon-action"
+                      type="button"
+                      aria-label={t("remove_shortcut", row.key || t("empty_value"))}
+                      onClick={() => removeShortcut(row.id)}
+                    >×</button>
+                  </div>
+                ))}
+              </div>
             </div>
             {error ? <p className="inline-error" role="alert">{error}</p> : null}
             <button
