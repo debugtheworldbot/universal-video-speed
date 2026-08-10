@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Universal Video Speed"
+  short_description: "Publish a verified patch GitHub Release"
+  default_prompt: "Use $release-universal-video-speed to publish the next patch release with a ZIP asset and changelog."
