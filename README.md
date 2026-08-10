@@ -2,6 +2,10 @@
 
 Keyboard playback-speed shortcuts for videos across the web, including videos inside embedded players.
 
+## Community
+
+Join the [Telegram discussion group](https://t.me/+tZyPMzd410RhYmU1).
+
 ## Installation
 
 1. Open the [latest GitHub release](https://github.com/debugtheworldbot/universal-video-speed/releases/latest) and download `universal-video-speed.zip` from **Assets**.
