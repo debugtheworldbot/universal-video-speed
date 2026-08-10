@@ -653,6 +653,17 @@ input::-webkit-inner-spin-button { appearance: none; }
   font-size: 13px;
   line-height: 1.25;
 }
+.project-links .project-link-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.github-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
 .project-links small {
   display: block;
   overflow: hidden;
