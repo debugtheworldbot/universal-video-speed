@@ -188,86 +188,6 @@ function Options(): React.JSX.Element {
       </header>
 
       <div className="settings" aria-label={t("playback_settings")}>
-        <section className="panel fallback-panel" aria-labelledby="fallback-title">
-          <div className="panel-head">
-            <h2 id="fallback-title">{t("fallback_defaults_title")}</h2>
-            <p className="hint">{t("fallback_defaults_hint")}</p>
-          </div>
-
-          <div className="fallback-sites" aria-busy={!loaded}>
-            {(["youtube", "bilibili"] as const).map((site) => (
-              <label className="fallback-site" key={site}>
-                <span className={`platform-dot ${site}`} aria-hidden="true" />
-                <span>{site === "youtube" ? "YouTube" : "Bilibili"}</span>
-                <input
-                  type="number"
-                  min="0.25"
-                  max="16"
-                  step="0.05"
-                  value={fallbackRates[site]}
-                  placeholder={t("not_set")}
-                  aria-label={t("site_fallback_speed", site === "youtube" ? "YouTube" : "Bilibili")}
-                  onChange={(event) => {
-                    setStatus("idle");
-                    setFallbackRates((current) => ({ ...current, [site]: event.target.value }));
-                  }}
-                />
-                <span aria-hidden="true">×</span>
-              </label>
-            ))}
-          </div>
-
-          <div className="url-defaults">
-            <div className="url-defaults-head">
-              <h3>{t("url_defaults_title")}</h3>
-              <p>{t("url_defaults_hint")}</p>
-            </div>
-            {urlRows.map((row) => (
-              <div className="url-row" key={row.id}>
-                <label>
-                  <span className="sr-only">{t("url_prefix_label")}</span>
-                  <input
-                    className="url-prefix-input"
-                    type="url"
-                    value={row.prefix}
-                    placeholder="https://example.com/videos/"
-                    onChange={(event) => updateUrlRow(row.id, { prefix: event.target.value })}
-                  />
-                </label>
-                <span className="map-arrow" aria-hidden="true">→</span>
-                <label className="rate-field">
-                  <span className="sr-only">{t("default_playback_speed")}</span>
-                  <input
-                    type="number"
-                    min="0.25"
-                    max="16"
-                    step="0.05"
-                    value={row.rate}
-                    onChange={(event) => updateUrlRow(row.id, { rate: event.target.value })}
-                  />
-                </label>
-                <button
-                  className="remove"
-                  type="button"
-                  aria-label={t("remove_url_prefix", row.prefix || t("empty_value"))}
-                  onClick={() => {
-                    setStatus("idle");
-                    setUrlRows((current) => current.filter(({ id }) => id !== row.id));
-                  }}
-                >×</button>
-              </div>
-            ))}
-            <button
-              className="add"
-              type="button"
-              onClick={() => {
-                setStatus("idle");
-                setUrlRows((current) => [...current, { id: crypto.randomUUID(), prefix: "", rate: "1.5" }]);
-              }}
-            >{t("add_url_prefix")}</button>
-          </div>
-        </section>
-
         <section className="panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
             <h2 id="shortcuts-title">{t("shortcuts_title")}</h2>
@@ -462,6 +382,86 @@ function Options(): React.JSX.Element {
           >
             {t("add_creator")}
           </button>
+        </section>
+
+        <section className="panel fallback-panel" aria-labelledby="fallback-title">
+          <div className="panel-head">
+            <h2 id="fallback-title">{t("fallback_defaults_title")}</h2>
+            <p className="hint fallback-hint">{t("fallback_defaults_hint")}</p>
+          </div>
+
+          <div className="fallback-sites" aria-busy={!loaded}>
+            {(["youtube", "bilibili"] as const).map((site) => (
+              <label className="fallback-site" key={site}>
+                <span className={`platform-dot ${site}`} aria-hidden="true" />
+                <span>{site === "youtube" ? "YouTube" : "Bilibili"}</span>
+                <input
+                  type="number"
+                  min="0.25"
+                  max="16"
+                  step="0.05"
+                  value={fallbackRates[site]}
+                  placeholder={t("not_set")}
+                  aria-label={t("site_fallback_speed", site === "youtube" ? "YouTube" : "Bilibili")}
+                  onChange={(event) => {
+                    setStatus("idle");
+                    setFallbackRates((current) => ({ ...current, [site]: event.target.value }));
+                  }}
+                />
+                <span aria-hidden="true">×</span>
+              </label>
+            ))}
+          </div>
+
+          <div className="url-defaults">
+            <div className="url-defaults-head">
+              <h3>{t("url_defaults_title")}</h3>
+              <p>{t("url_defaults_hint")}</p>
+            </div>
+            {urlRows.map((row) => (
+              <div className="url-row" key={row.id}>
+                <label>
+                  <span className="sr-only">{t("url_prefix_label")}</span>
+                  <input
+                    className="url-prefix-input"
+                    type="url"
+                    value={row.prefix}
+                    placeholder="https://example.com/videos/"
+                    onChange={(event) => updateUrlRow(row.id, { prefix: event.target.value })}
+                  />
+                </label>
+                <span className="map-arrow" aria-hidden="true">→</span>
+                <label className="rate-field">
+                  <span className="sr-only">{t("default_playback_speed")}</span>
+                  <input
+                    type="number"
+                    min="0.25"
+                    max="16"
+                    step="0.05"
+                    value={row.rate}
+                    onChange={(event) => updateUrlRow(row.id, { rate: event.target.value })}
+                  />
+                </label>
+                <button
+                  className="remove"
+                  type="button"
+                  aria-label={t("remove_url_prefix", row.prefix || t("empty_value"))}
+                  onClick={() => {
+                    setStatus("idle");
+                    setUrlRows((current) => current.filter(({ id }) => id !== row.id));
+                  }}
+                >×</button>
+              </div>
+            ))}
+            <button
+              className="add"
+              type="button"
+              onClick={() => {
+                setStatus("idle");
+                setUrlRows((current) => [...current, { id: crypto.randomUUID(), prefix: "", rate: "1.5" }]);
+              }}
+            >{t("add_url_prefix")}</button>
+          </div>
         </section>
       </div>
 

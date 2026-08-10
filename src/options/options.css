@@ -101,7 +101,8 @@ h2 {
   max-width: 22ch;
 }
 .shortcut-hint,
-.creator-hint {
+.creator-hint,
+.fallback-hint {
   max-width: none;
   white-space: nowrap;
 }
@@ -577,6 +578,7 @@ input::-webkit-inner-spin-button { appearance: none; }
     text-align: left;
     max-width: none;
   }
+  .fallback-hint { white-space: normal; }
 }
 
 @media (max-width: 560px) {
