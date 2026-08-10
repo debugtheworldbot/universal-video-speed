@@ -27,7 +27,7 @@
   "shortcut_conflict_body": { "message": "If you use Vimium or another keyboard-navigation extension, add this rule under Excluded URLs and keys so these shortcuts reach the video." },
   "vimium_pattern_label": { "message": "Pattern" },
   "vimium_keys_label": { "message": "Keys" },
-  "fallback_defaults_title": { "message": "Fallback speeds" },
+  "fallback_defaults_title": { "message": "Platform default speeds" },
   "fallback_defaults_hint": { "message": "Applied automatically once per video." },
   "priority_tooltip_label": { "message": "Show automatic speed priority" },
   "priority_tooltip_body": { "message": "Priority: manual speed > channel setting > custom webpage prefix > platform fallback." },
@@ -54,14 +54,14 @@
   "bilibili_creator_placeholder": { "message": "Space URL or UID" },
   "looking_up_creator": { "message": "Looking up creator" },
   "looking_up_creator_ellipsis": { "message": "Looking up creator…" },
-  "loading": { "message": "Loading" },
+  "loading": { "message": "Loading…" },
   "creator_lookup_failed": { "message": "Couldn’t load nickname. You can still save this creator." },
   "default_playback_speed": { "message": "Default playback speed" },
   "remove_creator": {
     "message": "Remove creator $CREATOR$",
     "placeholders": { "creator": { "content": "$1" } }
   },
-  "add_creator": { "message": "+ Add creator" },
+  "add_creator": { "message": "+ Add channel" },
   "saved_synced": { "message": "Saved — synced across Chrome." },
   "saved": { "message": "Saved" },
   "save_changes": { "message": "Save changes" },
@@ -94,5 +94,48 @@
       "rate": { "content": "$2" }
     }
   },
-  "all_settings": { "message": "All settings" }
+  "all_settings": { "message": "All settings" },
+  "settings_navigation": { "message": "Settings page navigation" },
+  "automatic_speed_title": { "message": "Automatic speed" },
+  "automatic_speed_hint": { "message": "Rules match from most specific to platform default and apply once per video." },
+  "compatibility_title": { "message": "Compatibility" },
+  "compatibility_hint": { "message": "Only adjust this when another extension intercepts your shortcuts." },
+  "priority_label": { "message": "Automatic speed priority" },
+  "priority_manual": { "message": "Manual" },
+  "priority_creator": { "message": "Channel" },
+  "priority_url": { "message": "Web rule" },
+  "priority_platform": { "message": "Platform default" },
+  "shortcut_key_number": {
+    "message": "Shortcut $NUMBER$ key",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "shortcut_speed_number": {
+    "message": "Shortcut $NUMBER$ playback speed",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "creator_defaults_compact_hint": {
+    "message": "$COUNT$ saved rules; adding from the extension popup is usually fastest.",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "search_creators": { "message": "Search channel rules" },
+  "search_creators_placeholder": { "message": "Search name, platform, or ID…" },
+  "actions_label": { "message": "Actions" },
+  "edit": { "message": "Edit" },
+  "remove": { "message": "Remove" },
+  "cancel": { "message": "Cancel" },
+  "done": { "message": "Done" },
+  "no_search_results": { "message": "No matching channel rules" },
+  "url_prefix_number": {
+    "message": "Web URL prefix $NUMBER$",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "url_speed_number": {
+    "message": "Web rule $NUMBER$ playback speed",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "rule_removed": { "message": "Rule removed" },
+  "undo": { "message": "Undo" },
+  "finish_creator_edit": { "message": "Finish or cancel the channel being edited." },
+  "unsaved_changes": { "message": "Changes are not saved yet and will sync to Chrome." },
+  "discard_changes": { "message": "Discard changes" }
 }

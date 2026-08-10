@@ -27,7 +27,7 @@
   "shortcut_conflict_body": { "message": "如果你使用 Vimium 或其他键盘导航扩展，请在其 Excluded URLs and keys 中添加以下规则，让这些快捷键交给视频页面。" },
   "vimium_pattern_label": { "message": "匹配" },
   "vimium_keys_label": { "message": "按键" },
-  "fallback_defaults_title": { "message": "全局 fallback 速度" },
+  "fallback_defaults_title": { "message": "平台默认速度" },
   "fallback_defaults_hint": { "message": "每个视频仅自动应用一次。" },
   "priority_tooltip_label": { "message": "查看自动速度优先级" },
   "priority_tooltip_body": { "message": "优先级：用户手动设定 > 频道设置 > 自定义网页前缀 > 平台 fallback。" },
@@ -54,14 +54,14 @@
   "bilibili_creator_placeholder": { "message": "空间网址或 UID" },
   "looking_up_creator": { "message": "正在查找创作者" },
   "looking_up_creator_ellipsis": { "message": "正在查找创作者…" },
-  "loading": { "message": "加载中" },
+  "loading": { "message": "加载中…" },
   "creator_lookup_failed": { "message": "无法加载昵称，但仍可保存此创作者。" },
   "default_playback_speed": { "message": "默认播放速度" },
   "remove_creator": {
     "message": "移除创作者 $CREATOR$",
     "placeholders": { "creator": { "content": "$1" } }
   },
-  "add_creator": { "message": "+ 添加创作者" },
+  "add_creator": { "message": "+ 添加频道" },
   "saved_synced": { "message": "已保存，并同步到 Chrome。" },
   "saved": { "message": "已保存" },
   "save_changes": { "message": "保存更改" },
@@ -94,5 +94,48 @@
       "rate": { "content": "$2" }
     }
   },
-  "all_settings": { "message": "全部设置" }
+  "all_settings": { "message": "全部设置" },
+  "settings_navigation": { "message": "设置页面导航" },
+  "automatic_speed_title": { "message": "自动速度" },
+  "automatic_speed_hint": { "message": "从精确规则到平台默认值依次匹配，每个视频仅自动应用一次。" },
+  "compatibility_title": { "message": "兼容性" },
+  "compatibility_hint": { "message": "仅在快捷键被其他扩展拦截时需要调整。" },
+  "priority_label": { "message": "自动速度优先级" },
+  "priority_manual": { "message": "手动设置" },
+  "priority_creator": { "message": "频道" },
+  "priority_url": { "message": "网页规则" },
+  "priority_platform": { "message": "平台默认" },
+  "shortcut_key_number": {
+    "message": "第 $NUMBER$ 个快捷键按键",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "shortcut_speed_number": {
+    "message": "第 $NUMBER$ 个快捷键播放速度",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "creator_defaults_compact_hint": {
+    "message": "已保存 $COUNT$ 条规则；通常从扩展弹窗添加最快。",
+    "placeholders": { "count": { "content": "$1" } }
+  },
+  "search_creators": { "message": "搜索频道规则" },
+  "search_creators_placeholder": { "message": "搜索名称、平台或 ID…" },
+  "actions_label": { "message": "操作" },
+  "edit": { "message": "编辑" },
+  "remove": { "message": "移除" },
+  "cancel": { "message": "取消" },
+  "done": { "message": "完成" },
+  "no_search_results": { "message": "没有匹配的频道规则" },
+  "url_prefix_number": {
+    "message": "第 $NUMBER$ 条网页 URL 前缀",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "url_speed_number": {
+    "message": "第 $NUMBER$ 条网页规则播放速度",
+    "placeholders": { "number": { "content": "$1" } }
+  },
+  "rule_removed": { "message": "已移除规则" },
+  "undo": { "message": "撤销" },
+  "finish_creator_edit": { "message": "请先完成或取消正在编辑的频道。" },
+  "unsaved_changes": { "message": "更改尚未保存，将同步到 Chrome。" },
+  "discard_changes": { "message": "放弃更改" }
 }
