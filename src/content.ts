@@ -16,7 +16,7 @@ import {
 let settings: Settings = DEFAULT_SETTINGS;
 
 function setPlaybackRate(video: HTMLVideoElement, rate: number): void {
-  if (creatorSiteForHostname(location.hostname) === "youtube") requestYouTubePlayerRate(rate);
+  if (creatorSiteForHostname(location.hostname) === "youtube") requestYouTubePlayerRate(video, rate);
   setVideoPlaybackRate(video, rate);
 }
 
