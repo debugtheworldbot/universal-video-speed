@@ -150,7 +150,7 @@ function Options(): React.JSX.Element {
         <section className="panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
             <h2 id="shortcuts-title">{t("shortcuts_title")}</h2>
-            <p className="hint">{t("shortcuts_hint")}</p>
+            <p className="hint shortcut-hint">{t("shortcuts_hint")}</p>
           </div>
 
           <div className="map-list" aria-busy={!loaded}>
