@@ -68,15 +68,17 @@ h1 {
 .settings {
   display: grid;
   grid-template-columns: minmax(260px, .72fr) minmax(420px, 1.28fr);
-  gap: clamp(28px, 4vw, 48px);
+  grid-template-areas:
+    "shortcuts creators"
+    "fallback creators";
+  column-gap: clamp(28px, 4vw, 48px);
+  row-gap: 28px;
   align-items: start;
 }
 .panel { min-width: 0; }
-.fallback-panel {
-  grid-column: 1 / -1;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
+.shortcuts-panel { grid-area: shortcuts; }
+.creators-panel { grid-area: creators; }
+.fallback-panel { grid-area: fallback; }
 .panel-head {
   display: flex;
   justify-content: space-between;
@@ -170,7 +172,7 @@ h2 {
 /* —— Automatic fallback speeds —— */
 .fallback-sites {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 .fallback-site {
@@ -629,6 +631,10 @@ input::-webkit-inner-spin-button { appearance: none; }
 @media (max-width: 900px) {
   .settings {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "shortcuts"
+      "fallback"
+      "creators";
     gap: 28px;
   }
   .panel-head {

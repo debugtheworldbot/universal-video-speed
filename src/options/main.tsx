@@ -188,7 +188,7 @@ function Options(): React.JSX.Element {
       </header>
 
       <div className="settings" aria-label={t("playback_settings")}>
-        <section className="panel" aria-labelledby="shortcuts-title">
+        <section className="panel shortcuts-panel" aria-labelledby="shortcuts-title">
           <div className="panel-head">
             <h2 id="shortcuts-title">{t("shortcuts_title")}</h2>
             <p className="hint shortcut-hint">{t("shortcuts_hint")}</p>
@@ -276,7 +276,7 @@ function Options(): React.JSX.Element {
           </aside>
         </section>
 
-        <section className="panel" aria-labelledby="creators-title">
+        <section className="panel creators-panel" aria-labelledby="creators-title">
           <div className="panel-head">
             <h2 id="creators-title">{t("creator_defaults_title")}</h2>
             <p className="hint creator-hint">{t("creator_defaults_hint")}</p>
