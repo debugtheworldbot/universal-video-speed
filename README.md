@@ -2,6 +2,8 @@
 
 Keyboard playback-speed shortcuts for videos across the web, including videos inside embedded players.
 
+[▶️ demo video](https://pub-675f266ed16043e3a602151cbf1dfc78.r2.dev/x-timeline2.mp4)
+
 [![Install from the Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Install-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/universal-video-speed/eolejhoapejdccldhnolnfahndeacami)
 
 ## Community
