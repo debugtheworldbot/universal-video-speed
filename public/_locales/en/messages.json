@@ -1,6 +1,6 @@
 {
   "extension_name": { "message": "Universal Video Speed" },
-  "extension_description": { "message": "Keyboard playback-speed shortcuts for videos across the web." },
+  "extension_description": { "message": "🎥 Never change playback speed again — set a default speed for every YouTuber & Bilibili creator." },
   "playback_title": {
     "message": "Universal Video Speed · $RATE$×",
     "placeholders": { "rate": { "content": "$1" } }

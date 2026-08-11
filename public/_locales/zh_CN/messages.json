@@ -1,13 +1,13 @@
 {
   "extension_name": { "message": "Universal Video Speed" },
-  "extension_description": { "message": "为网页视频提供通用键盘播放速度快捷键。" },
+  "extension_description": { "message": "让每位 UP 主都有自己的默认播放倍速。" },
   "playback_title": {
     "message": "Universal Video Speed · $RATE$×",
     "placeholders": { "rate": { "content": "$1" } }
   },
   "space_key": { "message": "空格" },
   "settings_title": { "message": "设置" },
-  "settings_lede": { "message": "将按键映射到播放速度，并为常看的视频设置自动速度。" },
+  "settings_lede": { "message": "你的倍速习惯，按 UP 主自动记忆" },
   "playback_settings": { "message": "播放设置" },
   "shortcuts_title": { "message": "快捷键" },
   "shortcuts_hint": { "message": "在各类网页视频中生效，输入文字时会自动忽略。" },
