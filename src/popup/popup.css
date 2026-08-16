@@ -31,6 +31,7 @@ h1 { margin: 18px 0 5px; font-size: 29px; line-height: 1.04; letter-spacing: -.0
 .select-wrap:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
 .select-wrap::after { content: "↓"; position: absolute; right: 10px; top: 50%; translate: 0 -50%; pointer-events: none; font: 600 10px/1 "SFMono-Regular", Consolas, monospace; }
 select { width: 100%; max-width: 135px; padding: 8px 28px 8px 11px; border: 0; border-radius: 0; outline: none; appearance: none; background: transparent; color: white; cursor: pointer; font-size: 17px; line-height: 1; font-weight: 700; text-align: right; }
+select option { background: #f1f0ea; color: var(--ink); }
 select:disabled { opacity: .55; }
 .note { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
 
